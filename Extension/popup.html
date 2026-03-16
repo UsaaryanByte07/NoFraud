@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+
+    <h2>NoFraud Extension</h2>
+
+    <div class="status">
+
+        <div class="card">
+            Threat Alerts
+            <span id="threatStatus">Scanning...</span>
+        </div>
+
+        <div class="card">
+            Threat Severity
+            <span id="severity">Low</span>
+        </div>
+
+        <div class="card">
+            Mail Review
+            <input id="emailCheck" placeholder="Enter email" />
+            <button id="scanMail">Scan</button>
+            <p id="mailResult"></p>
+        </div>
+
+        <div class="card">
+            Musoku Mode
+            <button id="musokuToggle">Activate</button>
+        </div>
+
+    </div>
+
+    <script src="popup.js"></script>
+
+</body>
+
+</html>
