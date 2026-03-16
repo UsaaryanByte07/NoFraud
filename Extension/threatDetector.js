@@ -1,23 +1,29 @@
 function detectThreats() {
+    let currentUrl = window.location.href;
 
-    let url = window.location.href;
+    // Contact the background script to check the URL against a Real-time Threat API
+    chrome.runtime.sendMessage(
+        { action: "checkURLThreats", url: currentUrl },
+        (response) => {
+            if (chrome.runtime.lastError) {
+                console.log("NoFraud: Could not contact background script.");
+                return;
+            }
 
-    let suspiciousKeywords = [
-        "login-verify",
-        "secure-update",
-        "bank-verification",
-        "account-reset",
-        "confirm-password"
-    ];
-
-    suspiciousKeywords.forEach(keyword => {
-
-        if (url.includes(keyword)) {
-            showThreatAlert("Hidden phishing detected");
+            if (response && response.isThreat) {
+                showThreatAlert("MALWARE DETECTED: This site is verified as malicious! (" + response.type + ")");
+            }
+            
+            // We can also keep a small local heuristic scan for common tricky signs as a backup:
+            let hostname = window.location.hostname;
+            let suspiciousKeywords = ["login-verify", "secure-update", "bank-verification"];
+            suspiciousKeywords.forEach(keyword => {
+                if (hostname.includes(keyword)) {
+                    showThreatAlert("Suspicious domain name detected (Phishing Keyword)");
+                }
+            });
         }
-
-    });
-
+    );
 }
 
 function showThreatAlert(message) {
