@@ -11,6 +11,7 @@ import VerifyOtp from './pages/VerifyOtp';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
+import FraudChat from './pages/FraudChat';
 
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/fraud-check"
+                element={
+                  <ProtectedRoute>
+                    <FraudChat />
                   </ProtectedRoute>
                 }
               />

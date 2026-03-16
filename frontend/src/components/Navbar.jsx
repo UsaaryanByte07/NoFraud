@@ -42,7 +42,19 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-4">
             {isLoggedIn ? (
               <>
-                <span className="text-slate-400 text-sm">
+                <Link
+                  to="/fraud-check"
+                  className="px-4 py-1.5 rounded-lg text-slate-300 hover:text-white text-sm transition-colors"
+                >
+                  Analyzer
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="px-4 py-1.5 rounded-lg text-slate-300 hover:text-white text-sm transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <span className="text-slate-400 text-sm ml-4 border-l border-white/10 pl-4">
                   Welcome,{' '}
                   <span className="text-white font-medium">
                     {user?.firstName || 'User'}
@@ -100,6 +112,20 @@ const Navbar = () => {
                 <p className="text-slate-400 text-sm px-2">
                   Welcome, <span className="text-white font-medium">{user?.firstName}</span>
                 </p>
+                <Link
+                  to="/fraud-check"
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full block text-left px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-all"
+                >
+                  Analyzer
+                </Link>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full block text-left px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-all"
+                >
+                  Dashboard
+                </Link>
                 <button
                   onClick={() => { setMenuOpen(false); handleLogout(); }}
                   className="w-full text-left px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-all"

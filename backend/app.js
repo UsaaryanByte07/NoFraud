@@ -14,6 +14,7 @@ require("dotenv").config();
 //Importing the Routers
 // const notFoundRouter = require("./routers/notFoundRouter");
 const { authRouter } = require("./routers/authRouter");
+const threatRoutes = require("./routers/threatRoutes");
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(
 );
 
 app.use("/api",authRouter);
+app.use("/api/threats", threatRoutes);
 // app.use(notFoundRouter);
 
 const PORT = 3010;
