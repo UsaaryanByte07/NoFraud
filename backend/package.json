@@ -3,13 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server:watch": "nodemon App.js",
+    "start": "npm run server:watch"
   },
   "dependencies": {
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "concurrently": "^9.2.1",
     "connect-mongo": "^6.0.0",
+    "cors": "^2.8.6",
     "crypto": "^1.0.1",
     "debug": "~2.6.9",
     "dotenv": "^17.3.1",

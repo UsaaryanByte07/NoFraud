@@ -1,9 +1,23 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express')
+const authRouter = express.Router();
+const {postForgotPassword, postResetPassword} = require('../controllers/auth/forgetPasswordController');
+const {postLogin, postLogout} = require('../controllers/auth/loginController');
+const {postVerifyOtp} = require('../controllers/auth/verifyOtpController');
+const {postSignup} = require('../controllers/auth/signupController');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+authRouter.post('/reset-password', postResetPassword)
 
-module.exports = router;
+authRouter.post('/forgot-password', postForgotPassword)
+
+authRouter.post('/verify-otp', postVerifyOtp);
+
+authRouter.post('/login',postLogin);
+
+authRouter.post('/signup',postSignup);
+
+authRouter.post('/logout',postLogout);
+
+
+module.exports = {
+    authRouter,
+}
