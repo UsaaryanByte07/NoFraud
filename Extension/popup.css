@@ -1,29 +1,213 @@
+/* ===== Base ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    width: 300px;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
-    padding: 10px;
+    width: 340px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1a1a2e 100%);
+    color: #e2e8f0;
+    padding: 16px;
+}
+
+/* ===== Header ===== */
+.header {
+    text-align: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 14px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 6px;
+}
+
+.header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Cards ===== */
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .card {
-    background: #1e293b;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 10px;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-button {
-    background: #22c55e;
-    border: none;
-    padding: 6px 10px;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
+.card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.card-icon {
+    font-size: 16px;
+}
+
+.card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-body {
+    padding-left: 24px;
+}
+
+.card-desc {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+/* ===== Status Badges ===== */
+.status-badge, .risk-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+}
+
+.scanning, .analyzing {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+}
+
+.safe {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.moderate {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+}
+
+.high {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.critical {
+    background: rgba(239, 68, 68, 0.25);
+    color: #ff4444;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* ===== Input & Button ===== */
+.input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.6);
+    color: #e2e8f0;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+input:focus {
+    border-color: #38bdf8;
+}
+
+input::placeholder {
+    color: #475569;
+}
+
+button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#scanMail {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+
+#scanMail:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+}
+
+.btn-musoku {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
     width: 100%;
-    padding: 5px;
-    margin-top: 5px;
+}
+
+.btn-musoku:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    transform: translateY(-1px);
+}
+
+/* ===== Result Text ===== */
+.result-text {
+    font-size: 12px;
+    margin-top: 8px;
+    min-height: 16px;
+    transition: color 0.3s ease;
+}
+
+/* ===== Footer ===== */
+.footer {
+    text-align: center;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer p {
+    font-size: 10px;
+    color: #475569;
+    letter-spacing: 0.3px;
 }
