@@ -1,3 +1,6 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -15,7 +18,7 @@ const { authRouter } = require("./routers/authRouter");
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true
 }))
 app.use(express.static(path.join(rootDir, "public")));

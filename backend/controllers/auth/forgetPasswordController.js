@@ -70,7 +70,7 @@ const postForgotPassword = async (req, res, next) => {
 
     await sendEmail(
       email,
-      "Reset Your Airbnb Password",
+      "Reset Your NoFraud Password",
       `Hi there,
 
 We received a request to reset the password for your NoFraud account associated with ${email}.
@@ -96,7 +96,7 @@ This link will expire in 5 minutes for security reasons.
 If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
 
 Best regards,
-The Airbnb Team`,
+The NoFraud Team`,
     );
 
     res.json({
