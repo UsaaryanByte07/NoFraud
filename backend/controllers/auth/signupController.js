@@ -21,7 +21,7 @@ const postSignup = [
     const errors = validator.validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(422).json({errors: errors.array(), prevDetails: {firstName,lastName,password,email,confirmPassword,userType,terms}})
+      return res.status(422).json({errors: errors.array(), prevDetails: {firstName,lastName,password,email,confirmPassword}})
     }
     try {
       const hashedPassword = await bcrypt.hash(password, 12);
