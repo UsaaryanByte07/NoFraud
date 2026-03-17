@@ -148,6 +148,89 @@ document.getElementById("scanMail").addEventListener("click", () => {
     });
 });
 
+// ===== Child Protection Mode =====
+(function() {
+    const toggle = document.getElementById("childModeToggle");
+    const setupArea = document.getElementById("pinSetupArea");
+    const pinInput = document.getElementById("guardianPin");
+    const saveBtn = document.getElementById("savePinBtn");
+    const pinMsg = document.getElementById("pinMsg");
+
+    const unlockArea = document.getElementById("pinUnlockArea");
+    const unlockInput = document.getElementById("unlockPin");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const unlockMsg = document.getElementById("unlockMsg");
+
+    let isSaving = false;
+
+    // Load state
+    chrome.storage.local.get(["childMode", "guardianPin"], (data) => {
+        if (data.childMode) {
+            toggle.checked = true;
+        }
+    });
+
+    toggle.addEventListener("change", (e) => {
+        // Turning ON
+        if (toggle.checked) {
+            chrome.storage.local.get("guardianPin", (data) => {
+                if (!data.guardianPin) {
+                    // First time: ask to set PIN
+                    setupArea.style.display = "block";
+                    toggle.checked = false; // keep off until saved
+                } else {
+                    // Already has PIN, just turn on
+                    chrome.storage.local.set({ childMode: true });
+                }
+            });
+        } 
+        // Turning OFF - requires PIN
+        else {
+            toggle.checked = true; // force back on until verified
+            unlockArea.style.display = "block";
+            unlockInput.focus();
+        }
+    });
+
+    saveBtn.addEventListener("click", () => {
+        const pin = pinInput.value;
+        if (!/^\d{4}$/.test(pin)) {
+            pinMsg.innerText = "Must be exactly 4 digits.";
+            pinMsg.style.color = "#ef4444";
+            return;
+        }
+        chrome.storage.local.set({ childMode: true, guardianPin: pin }, () => {
+            pinMsg.innerText = "PIN saved! Protection enabled.";
+            pinMsg.style.color = "#22c55e";
+            toggle.checked = true;
+            setTimeout(() => {
+                setupArea.style.display = "none";
+                pinInput.value = "";
+                pinMsg.innerText = "";
+            }, 1500);
+        });
+    });
+
+    unlockBtn.addEventListener("click", () => {
+        chrome.storage.local.get("guardianPin", (data) => {
+            if (unlockInput.value === data.guardianPin) {
+                chrome.storage.local.set({ childMode: false });
+                toggle.checked = false;
+                unlockMsg.innerText = "Protection disabled.";
+                unlockMsg.style.color = "#22c55e";
+                setTimeout(() => {
+                    unlockArea.style.display = "none";
+                    unlockInput.value = "";
+                    unlockMsg.innerText = "";
+                }, 1000);
+            } else {
+                unlockMsg.innerText = "❌ Incorrect PIN.";
+                unlockMsg.style.color = "#ef4444";
+            }
+        });
+    });
+})();
+
 // ===== Musoku Mode =====
 document.getElementById("musokuToggle").addEventListener("click", () => {
     alert("Musoku Mode Activated: Minimal Trace Browsing Enabled");

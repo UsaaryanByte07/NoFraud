@@ -130,6 +130,37 @@
 
         <div class="card">
             <div class="card-header">
+                <span class="card-icon">👶</span>
+                <span class="card-title">Child Protection</span>
+            </div>
+            <div class="card-body">
+                <p class="card-desc">Restricts explicit content and dangerous sites.</p>
+                <div class="toggle-row">
+                    <span>Guardian Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="childModeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                
+                <!-- Setup PIN UI (hidden by default) -->
+                <div id="pinSetupArea" class="pin-area" style="display: none;">
+                    <input type="password" id="guardianPin" placeholder="Enter 4-digit PIN" maxlength="4" class="pin-input">
+                    <button id="savePinBtn" class="btn-small">Save PIN</button>
+                    <p id="pinMsg" class="result-text" style="margin-top:5px;"></p>
+                </div>
+
+                <!-- Unlock PIN UI (hidden by default) -->
+                <div id="pinUnlockArea" class="pin-area" style="display: none;">
+                    <input type="password" id="unlockPin" placeholder="Enter PIN to disable" maxlength="4" class="pin-input">
+                    <button id="unlockBtn" class="btn-small">Unlock</button>
+                    <p id="unlockMsg" class="result-text" style="margin-top:5px;"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
                 <span class="card-icon">🔐</span>
                 <span class="card-title">Password Strength</span>
             </div>
