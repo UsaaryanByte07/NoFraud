@@ -4,8 +4,12 @@ const GOOGLE_SAFE_BROWSING_API_KEY = "AIzaSyCopSKz5YPxPsd1G7NvoqPFlVRguOhzSck";
 
 // ===== Auto-scan pages on load =====
 chrome.webNavigation.onCompleted.addListener((details) => {
-    chrome.tabs.sendMessage(details.tabId, { action: "scanPage" }).catch(() => {
-        // Tab may not have a content script ready yet — safe to ignore
+    chrome.storage.local.get("extensionEnabled", (data) => {
+        if (data.extensionEnabled === false) return;
+        
+        chrome.tabs.sendMessage(details.tabId, { action: "scanPage" }).catch(() => {
+            // Tab may not have a content script ready yet — safe to ignore
+        });
     });
 });
 

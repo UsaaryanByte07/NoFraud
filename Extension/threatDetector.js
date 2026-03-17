@@ -52,12 +52,40 @@ function detectThreats() {
                 threatReason = "Restricted Content (Child Protection Enabled).";
             }
 
-            // E. Block unsecured HTTP in Child Mode
-            const isLocal = hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("192.168.");
-            if (protocol === "http:" && !isLocal) {
+            // F. Block Social Media & Gaming in Child Mode
+            const socialGamingDomains = [
+                "facebook.com", "instagram.com", "tiktok.com", "twitter.com", "x.com",
+                "roblox.com", "fortnite.com", "twitch.tv", "discord.com", "steamcommunity.com"
+            ];
+            if (socialGamingDomains.some(domain => hostname.includes(domain))) {
                 isThreat = true;
-                threatReason = "Unsecured (HTTP) site blocked in Child Protection mode.";
+                threatReason = "Social Media / Gaming is restricted in Child Mode.";
             }
+
+            // G. Scrape page for inappropriate text content
+            const pageText = document.body.innerText.toLowerCase();
+            const badWords = ["sex", "naked", "gamble", "kill", "drug", "casino"];
+            if (badWords.some(word => pageText.includes(word))) {
+                // If many bad words found, block it
+                let matchCount = badWords.filter(word => pageText.includes(word)).length;
+                if (matchCount >= 2) {
+                    isThreat = true;
+                    threatReason = "Inappropriate content detected on the page.";
+                }
+            }
+
+            // H. Blur all images as a precaution (Optional/Conditional)
+            document.querySelectorAll('img').forEach(img => {
+                img.style.filter = "blur(10px) grayscale(100%)";
+                img.style.transition = "filter 0.5s";
+                img.title = "Blocked by NoFraud Child Protection";
+            });
+
+            // I. Remove Chat/Comment widgets (Common distraction/danger)
+            const chatSelectors = ['[class*="chat"]', '[id*="chat"]', '.comments', '#comments'];
+            chatSelectors.forEach(selector => {
+                document.querySelectorAll(selector).forEach(el => el.remove());
+            });
         }
 
         // --- 2. ASYNC API CHECKS (Background) ---

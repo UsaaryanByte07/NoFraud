@@ -9,15 +9,54 @@
 <body>
 
     <div class="header">
-        <img src="icon/icon48.png" alt="NoFraud" class="logo">
+        <div class="header-top">
+            <img src="icon/icon48.png" alt="NoFraud" class="logo">
+            <div class="master-toggle-container">
+                <label class="switch master-switch">
+                    <input type="checkbox" id="masterToggle" checked>
+                    <span class="slider round"></span>
+                </label>
+                <span id="masterStatusText">ON</span>
+            </div>
+        </div>
         <h1>NoFraud</h1>
         <p class="subtitle">Cybersecurity Shield</p>
     </div>
 
     <div class="section">
-        <div class="card">
+        <div class="card shields-card">
             <div class="card-header">
                 <span class="card-icon">🛡️</span>
+                <span class="card-title">Security Shields</span>
+            </div>
+            <div class="card-body">
+                <div class="toggle-row">
+                    <span>Threat Detection</span>
+                    <label class="switch">
+                        <input type="checkbox" id="threatShieldToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span>Ad Blocker</span>
+                    <label class="switch">
+                        <input type="checkbox" id="adShieldToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span>Privacy Guard (Blur)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="privacyShieldToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🚩</span>
                 <span class="card-title">Threat Status</span>
             </div>
             <div class="card-body">

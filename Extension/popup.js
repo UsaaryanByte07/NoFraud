@@ -440,6 +440,58 @@ document.getElementById("checkBreach").addEventListener("click", () => {
 
 // ===== Auto Threat Scan + Trust Level on Popup Open =====
 document.addEventListener("DOMContentLoaded", () => {
+    // --- Shield/Toggle Management ---
+    const masterToggle = document.getElementById("masterToggle");
+    const masterStatusText = document.getElementById("masterStatusText");
+    const threatShieldToggle = document.getElementById("threatShieldToggle");
+    const adShieldToggle = document.getElementById("adShieldToggle");
+    const privacyShieldToggle = document.getElementById("privacyShieldToggle");
+    const allSwitches = [threatShieldToggle, adShieldToggle, privacyShieldToggle];
+
+    // Load saved states
+    chrome.storage.local.get(["extensionEnabled", "threatEnabled", "adBlockEnabled", "privacyEnabled"], (data) => {
+        // Default to TRUE if undefined
+        masterToggle.checked = data.extensionEnabled !== false;
+        threatShieldToggle.checked = data.threatEnabled !== false;
+        adShieldToggle.checked = data.adBlockEnabled !== false;
+        privacyShieldToggle.checked = data.privacyEnabled !== false;
+
+        updateMasterUI(masterToggle.checked);
+    });
+
+    function updateMasterUI(enabled) {
+        masterStatusText.innerText = enabled ? "ON" : "OFF";
+        masterStatusText.style.color = enabled ? "#38bdf8" : "#94a3b8";
+        
+        // Disable/Enable sub-toggles visually if master is OFF
+        allSwitches.forEach(sw => {
+            sw.disabled = !enabled;
+            sw.parentElement.style.opacity = enabled ? "1" : "0.4";
+        });
+    }
+
+    masterToggle.addEventListener("change", () => {
+        const enabled = masterToggle.checked;
+        chrome.storage.local.set({ extensionEnabled: enabled });
+        updateMasterUI(enabled);
+
+        // If turning OFF master, effectively turn off others for the logic
+        // (but we keep their checkbox state for when it turns back on)
+    });
+
+    threatShieldToggle.addEventListener("change", () => {
+        chrome.storage.local.set({ threatEnabled: threatShieldToggle.checked });
+    });
+
+    adShieldToggle.addEventListener("change", () => {
+        chrome.storage.local.set({ adBlockEnabled: adShieldToggle.checked });
+    });
+
+    privacyShieldToggle.addEventListener("change", () => {
+        chrome.storage.local.set({ privacyEnabled: privacyShieldToggle.checked });
+    });
+
+    // --- Threat Status UI Elements ---
     const threatStatusEl = document.getElementById("threatStatus");
     const severityEl = document.getElementById("severity");
     const trustScoreEl = document.getElementById("trustScore");

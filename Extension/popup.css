@@ -21,10 +21,47 @@ body {
     margin-bottom: 14px;
 }
 
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.master-toggle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+#masterStatusText {
+    font-size: 10px;
+    font-weight: 800;
+    color: #38bdf8;
+    letter-spacing: 0.3px;
+}
+
+.master-switch.switch {
+    width: 44px;
+    height: 24px;
+}
+
+.master-switch .slider:before {
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+}
+
+.master-switch input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
 .logo {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 6px;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
 }
 
 .header h1 {
