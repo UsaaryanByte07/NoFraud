@@ -60,6 +60,14 @@ document.getElementById("scanMail").addEventListener("click", () => {
         return;
     }
 
+    // Fast check for typosquatting Gmail/Yahoo/Outlook
+    const typoDomains = ["gamil.com", "gmal.com", "gmail.com.br", "gmai.com", "yaho.com", "yahooo.com", "outlok.com", "hotmal.com"];
+    if (typoDomains.includes(domain)) {
+        resultEl.innerHTML = "❌ <b>Fraudulent</b> — Typosquatting detected (fake popular domain).";
+        resultEl.style.color = "#ef4444";
+        return;
+    }
+
     // Send to background.js for real API verification
     chrome.runtime.sendMessage({ action: "verifyEmail", email: email }, (response) => {
         if (chrome.runtime.lastError || !response) {
@@ -168,7 +176,11 @@ document.getElementById("musokuToggle").addEventListener("click", () => {
         { id: "no_common", label: "Not a common password",  test: p => {
             const common = ["password", "123456", "12345678", "qwerty", "abc123",
                 "password1", "iloveyou", "admin", "letmein", "welcome",
-                "monkey", "dragon", "master", "login", "princess", "1234567890"];
+                "monkey", "dragon", "master", "login", "princess", "1234567890", "qazwsx"];
+            // Penalize repeating characters (e.g., 'aaaaaa')
+            if (/^(.)\1{4,}$/.test(p)) return false;
+            // Penalize sequences (e.g., '123456', 'abcdef')
+            if (/(abcde|12345|qwert|asdfg|zxcvb)/i.test(p)) return false;
             return !common.includes(p.toLowerCase());
         }},
     ];
@@ -261,13 +273,17 @@ document.getElementById("scanLink").addEventListener("click", () => {
     // Local checks
     if (protocol === "http:") risks.push("No HTTPS encryption");
 
+    if (hostname.includes("xn--")) risks.push("Punycode detected (Homograph spoofing)");
+    if (url.includes("@") && urlObj.username) risks.push("Hidden domain steering (@ detection)");
+    if ((url.match(/%/g) || []).length > 5) risks.push("Excessive URL encoding (Obfuscation)");
+
     const phishingKw = ["login-verify", "secure-update", "bank-verification",
-        "account-reset", "confirm-password", "paypal-secure", "free-gift", "claim-prize"];
+        "account-reset", "confirm-password", "verify-identity", "paypal-secure", "free-gift", "claim-prize"];
     if (phishingKw.some(kw => hostname.includes(kw))) risks.push("Phishing keywords detected");
 
-    const riskyTlds = [".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".pw", ".buzz", ".icu"];
+    const riskyTlds = [".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".pw", ".buzz", ".icu", ".cam"];
     const tld = "." + hostname.split(".").pop();
-    if (riskyTlds.includes(tld)) risks.push("High-risk domain extension");
+    if (riskyTlds.includes(tld)) risks.push("High-risk domain extension (" + tld + ")");
 
     if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) risks.push("IP-based URL (no domain name)");
     if (hostname.length > 40) risks.push("Unusually long hostname");
@@ -504,13 +520,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // --- Factor 4: URL Structure Analysis (15 pts) ---
         const hasPhishing = phishingKeywords.some(kw => hostname.includes(kw));
+        const hasPunycode = hostname.includes("xn--");
         const hasTooManyDots = hostname.split(".").length > 4;
         const hasLongHostname = hostname.length > 40;
         const hasIPAddress = /^\d{1,3}(\.\d{1,3}){3}$/.test(hostname);
         const hasSuspiciousChars = /[@%!]/.test(currentUrl);
         const hasDoubleHyphens = hostname.includes("--");
 
-        if (!(hasPhishing || hasTooManyDots || hasLongHostname || hasIPAddress || hasSuspiciousChars || hasDoubleHyphens)) {
+        if (hasPhishing || hasPunycode || hasTooManyDots || hasLongHostname || hasIPAddress || hasSuspiciousChars || hasDoubleHyphens) {
+            scores.structure = 0;
+            if (hasPunycode) trustPoints -= 15; // Major penalty for punycode homographs
+        } else {
             scores.structure = 15;
             trustPoints += 15;
         }
