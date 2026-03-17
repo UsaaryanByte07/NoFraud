@@ -211,3 +211,171 @@ button {
     color: #475569;
     letter-spacing: 0.3px;
 }
+
+/* ===== Circular Gauge ===== */
+.gauge-container {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 14px auto;
+}
+
+.gauge-svg {
+    width: 110px;
+    height: 110px;
+    transform: rotate(-90deg);
+}
+
+.gauge-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.06);
+    stroke-width: 8;
+}
+
+.gauge-fill {
+    fill: none;
+    stroke: #38bdf8;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+    transition: stroke-dashoffset 1s ease, stroke 0.4s ease;
+}
+
+.gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gauge-score {
+    font-size: 24px;
+    font-weight: 800;
+    color: #38bdf8;
+    line-height: 1;
+    transition: color 0.4s ease;
+}
+
+.gauge-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+    transition: color 0.4s ease;
+}
+
+/* ===== Factor Bar Graphs ===== */
+.factor-graphs {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 0 2px;
+}
+
+.factor-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.factor-name {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    width: 56px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.factor-bar-bg {
+    flex: 1;
+    height: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.factor-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: #22c55e;
+    transition: width 0.8s ease, background 0.4s ease;
+}
+
+.factor-pts {
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ===== Password Strength Meter ===== */
+.pwd-strength-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0 6px 0;
+}
+
+.pwd-strength-bar {
+    height: 100%;
+    border-radius: 3px;
+    background: #ef4444;
+    transition: width 0.4s ease, background 0.4s ease;
+}
+
+.pwd-criteria {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.pwd-criteria-item {
+    font-size: 10px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s ease;
+}
+
+.pwd-criteria-item.pass {
+    color: #22c55e;
+}
+
+.pwd-criteria-item.fail {
+    color: #64748b;
+}
+
+#togglePwdVis {
+    min-width: 32px;
+    padding: 0 6px;
+    font-size: 14px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: #94a3b8;
+    transition: background 0.2s ease;
+}
+
+#togglePwdVis:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Result Text Enhancement ===== */
+.result-text small {
+    opacity: 0.8;
+    line-height: 1.4;
+}
