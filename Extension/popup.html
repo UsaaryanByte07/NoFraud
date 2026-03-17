@@ -1,38 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
 
-    <h2>NoFraud Extension</h2>
+    <div class="header">
+        <div class="header-top">
+            <img src="icon/icon48.png" alt="NoFraud" class="logo">
+            <div class="master-toggle-container">
+                <label class="switch master-switch">
+                    <input type="checkbox" id="masterToggle" checked>
+                    <span class="slider round"></span>
+                </label>
+                <span id="masterStatusText">ON</span>
+            </div>
+        </div>
+        <h1>NoFraud</h1>
+        <p class="subtitle">Cybersecurity Shield</p>
+    </div>
 
-    <div class="status">
-
-        <div class="card">
-            Threat Alerts
-            <span id="threatStatus">Scanning...</span>
+    <div class="section">
+        <div class="card shields-card">
+            <div class="card-header">
+                <span class="card-icon">🛡️</span>
+                <span class="card-title">Security Shields</span>
+            </div>
+            <div class="card-body">
+                <div class="toggle-row">
+                    <span>Threat Detection</span>
+                    <label class="switch">
+                        <input type="checkbox" id="threatShieldToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span>Ad Blocker</span>
+                    <label class="switch">
+                        <input type="checkbox" id="adShieldToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span>Sensitive Password Blur</span>
+                    <label class="switch">
+                        <input type="checkbox" id="passBlurToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <span>Email Privacy Guard</span>
+                    <label class="switch">
+                        <input type="checkbox" id="emailBlurToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div class="card">
-            Threat Severity
-            <span id="severity">Low</span>
+            <div class="card-header">
+                <span class="card-icon">🚩</span>
+                <span class="card-title">Threat Status</span>
+            </div>
+            <div class="card-body">
+                <span id="threatStatus" class="status-badge scanning">Scanning...</span>
+            </div>
         </div>
 
         <div class="card">
-            Mail Review
-            <input id="emailCheck" placeholder="Enter email" />
-            <button id="scanMail">Scan</button>
-            <p id="mailResult"></p>
+            <div class="card-header">
+                <span class="card-icon">⚡</span>
+                <span class="card-title">Risk Level</span>
+            </div>
+            <div class="card-body">
+                <span id="severity" class="risk-badge analyzing">Analyzing...</span>
+            </div>
+        </div>
+
+        <div class="card trust-card">
+            <div class="card-header">
+                <span class="card-icon">📊</span>
+                <span class="card-title">Website Trust Level</span>
+            </div>
+            <div class="card-body">
+
+                <!-- Circular Gauge -->
+                <div class="gauge-container">
+                    <svg class="gauge-svg" viewBox="0 0 120 120">
+                        <circle class="gauge-bg" cx="60" cy="60" r="50" />
+                        <circle class="gauge-fill" id="gaugeFill" cx="60" cy="60" r="50" />
+                    </svg>
+                    <div class="gauge-center">
+                        <span id="trustScore" class="gauge-score">—</span>
+                        <span id="trustLabel" class="gauge-label">Analyzing</span>
+                    </div>
+                </div>
+
+                <!-- Factor Bar Graphs -->
+                <div class="factor-graphs">
+                    <div class="factor-row">
+                        <span class="factor-name">HTTPS</span>
+                        <div class="factor-bar-bg">
+                            <div class="factor-bar" id="barHttps" style="width: 0%"></div>
+                        </div>
+                        <span class="factor-pts" id="ptsHttps">0/20</span>
+                    </div>
+                    <div class="factor-row">
+                        <span class="factor-name">Domain</span>
+                        <div class="factor-bar-bg">
+                            <div class="factor-bar" id="barDomain" style="width: 0%"></div>
+                        </div>
+                        <span class="factor-pts" id="ptsDomain">0/20</span>
+                    </div>
+                    <div class="factor-row">
+                        <span class="factor-name">TLD</span>
+                        <div class="factor-bar-bg">
+                            <div class="factor-bar" id="barTld" style="width: 0%"></div>
+                        </div>
+                        <span class="factor-pts" id="ptsTld">0/15</span>
+                    </div>
+                    <div class="factor-row">
+                        <span class="factor-name">Structure</span>
+                        <div class="factor-bar-bg">
+                            <div class="factor-bar" id="barStructure" style="width: 0%"></div>
+                        </div>
+                        <span class="factor-pts" id="ptsStructure">0/15</span>
+                    </div>
+                    <div class="factor-row">
+                        <span class="factor-name">Age</span>
+                        <div class="factor-bar-bg">
+                            <div class="factor-bar" id="barAge" style="width: 0%"></div>
+                        </div>
+                        <span class="factor-pts" id="ptsAge">0/15</span>
+                    </div>
+                    <div class="factor-row">
+                        <span class="factor-name">Threats</span>
+                        <div class="factor-bar-bg">
+                            <div class="factor-bar" id="barThreats" style="width: 0%"></div>
+                        </div>
+                        <span class="factor-pts" id="ptsThreats">0/15</span>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <div class="card">
-            Musoku Mode
-            <button id="musokuToggle">Activate</button>
+            <div class="card-header">
+                <span class="card-icon">📧</span>
+                <span class="card-title">Email Scanner</span>
+            </div>
+            <div class="card-body">
+                <div class="input-group">
+                    <input id="emailCheck" type="email" placeholder="Enter email to scan..." />
+                    <button id="scanMail">Scan</button>
+                </div>
+                <p id="mailResult" class="result-text"></p>
+            </div>
         </div>
 
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">👁️</span>
+                <span class="card-title">Musoku Mode</span>
+            </div>
+            <div class="card-body">
+                <p class="card-desc">Activate minimal trace browsing protection.</p>
+                <button id="musokuToggle" class="btn-musoku">Activate</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">👶</span>
+                <span class="card-title">Child Protection</span>
+            </div>
+            <div class="card-body">
+                <p class="card-desc">Restricts explicit content and dangerous sites.</p>
+                <div class="toggle-row">
+                    <span>Guardian Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="childModeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                
+                <!-- Setup PIN UI (hidden by default) -->
+                <div id="pinSetupArea" class="pin-area" style="display: none;">
+                    <input type="password" id="guardianPin" placeholder="Enter 4-digit PIN" maxlength="4" class="pin-input">
+                    <button id="savePinBtn" class="btn-small">Save PIN</button>
+                    <p id="pinMsg" class="result-text" style="margin-top:5px;"></p>
+                </div>
+
+                <!-- Unlock PIN UI (hidden by default) -->
+                <div id="pinUnlockArea" class="pin-area" style="display: none;">
+                    <input type="password" id="unlockPin" placeholder="Enter PIN to disable" maxlength="4" class="pin-input">
+                    <button id="unlockBtn" class="btn-small">Unlock</button>
+                    <p id="unlockMsg" class="result-text" style="margin-top:5px;"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🔐</span>
+                <span class="card-title">Password Strength</span>
+            </div>
+            <div class="card-body">
+                <div class="input-group">
+                    <input id="passwordInput" type="password" placeholder="Test a password..." autocomplete="off" />
+                    <button id="togglePwdVis" title="Show/Hide">👁</button>
+                </div>
+                <div class="pwd-strength-bar-bg">
+                    <div id="pwdStrengthBar" class="pwd-strength-bar" style="width: 0%"></div>
+                </div>
+                <p id="pwdResult" class="result-text"></p>
+                <div id="pwdCriteria" class="pwd-criteria"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🔗</span>
+                <span class="card-title">Link Scanner</span>
+            </div>
+            <div class="card-body">
+                <div class="input-group">
+                    <input id="linkInput" type="url" placeholder="Paste a suspicious link..." />
+                    <button id="scanLink">Check</button>
+                </div>
+                <p id="linkResult" class="result-text"></p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">💀</span>
+                <span class="card-title">Data Breach Check</span>
+            </div>
+            <div class="card-body">
+                <div class="input-group">
+                    <input id="breachEmail" type="email" placeholder="Check if email was breached..." />
+                    <button id="checkBreach">Check</button>
+                </div>
+                <p id="breachResult" class="result-text"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>NoFraud v2.0 — Stay Safe Online</p>
     </div>
 
     <script src="popup.js"></script>
