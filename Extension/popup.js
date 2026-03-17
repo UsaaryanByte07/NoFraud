@@ -445,16 +445,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const masterStatusText = document.getElementById("masterStatusText");
     const threatShieldToggle = document.getElementById("threatShieldToggle");
     const adShieldToggle = document.getElementById("adShieldToggle");
-    const privacyShieldToggle = document.getElementById("privacyShieldToggle");
-    const allSwitches = [threatShieldToggle, adShieldToggle, privacyShieldToggle];
+    const passBlurToggle = document.getElementById("passBlurToggle");
+    const emailBlurToggle = document.getElementById("emailBlurToggle");
+    
+    const allSwitches = [threatShieldToggle, adShieldToggle, passBlurToggle, emailBlurToggle];
 
     // Load saved states
-    chrome.storage.local.get(["extensionEnabled", "threatEnabled", "adBlockEnabled", "privacyEnabled"], (data) => {
+    chrome.storage.local.get([
+        "extensionEnabled", 
+        "threatEnabled", 
+        "adBlockEnabled", 
+        "passwordBlurEnabled", 
+        "emailBlurEnabled"
+    ], (data) => {
         // Default to TRUE if undefined
         masterToggle.checked = data.extensionEnabled !== false;
         threatShieldToggle.checked = data.threatEnabled !== false;
         adShieldToggle.checked = data.adBlockEnabled !== false;
-        privacyShieldToggle.checked = data.privacyEnabled !== false;
+        passBlurToggle.checked = data.passwordBlurEnabled !== false;
+        emailBlurToggle.checked = data.emailBlurEnabled !== false;
 
         updateMasterUI(masterToggle.checked);
     });
@@ -466,7 +475,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Disable/Enable sub-toggles visually if master is OFF
         allSwitches.forEach(sw => {
             sw.disabled = !enabled;
-            sw.parentElement.style.opacity = enabled ? "1" : "0.4";
+            if (sw.parentElement && sw.parentElement.parentElement) {
+                sw.parentElement.parentElement.style.opacity = enabled ? "1" : "0.4";
+            }
         });
     }
 
@@ -474,9 +485,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const enabled = masterToggle.checked;
         chrome.storage.local.set({ extensionEnabled: enabled });
         updateMasterUI(enabled);
-
-        // If turning OFF master, effectively turn off others for the logic
-        // (but we keep their checkbox state for when it turns back on)
     });
 
     threatShieldToggle.addEventListener("change", () => {
@@ -487,8 +495,12 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.storage.local.set({ adBlockEnabled: adShieldToggle.checked });
     });
 
-    privacyShieldToggle.addEventListener("change", () => {
-        chrome.storage.local.set({ privacyEnabled: privacyShieldToggle.checked });
+    passBlurToggle.addEventListener("change", () => {
+        chrome.storage.local.set({ passwordBlurEnabled: passBlurToggle.checked });
+    });
+
+    emailBlurToggle.addEventListener("change", () => {
+        chrome.storage.local.set({ emailBlurEnabled: emailBlurToggle.checked });
     });
 
     // --- Threat Status UI Elements ---

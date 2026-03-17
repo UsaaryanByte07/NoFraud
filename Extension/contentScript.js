@@ -4,7 +4,8 @@ function runShields() {
     chrome.storage.local.get([
         "extensionEnabled", 
         "threatEnabled", 
-        "privacyEnabled", 
+        "passwordBlurEnabled",
+        "emailBlurEnabled", 
         "adBlockEnabled"
     ], (data) => {
         // If extension is disabled globally, don't run anything
@@ -12,7 +13,8 @@ function runShields() {
 
         // Run enabled shields
         if (data.threatEnabled !== false) detectThreats();
-        if (data.privacyEnabled !== false) blurSensitiveData();
+        if (data.passwordBlurEnabled !== false) blurPasswords();
+        if (data.emailBlurEnabled !== false) blurEmails();
         if (data.adBlockEnabled !== false) blockAds();
     });
 }
