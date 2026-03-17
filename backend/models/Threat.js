@@ -8,7 +8,7 @@ const threatSchema = new mongoose.Schema({
   },
   inputType: { 
     type: String, 
-    enum: ["url", "email", "text"], 
+    enum: ["url", "email", "text", "file"], 
     required: true 
   },
   content: { 

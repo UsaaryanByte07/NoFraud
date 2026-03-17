@@ -1,5 +1,5 @@
 const Threat = require('../models/Threat');
-const { analyzeContent } = require('../utils/fraudDetector');
+const { analyzeContent, analyzeFile } = require('../utils/fraudDetector');
 
 // Middleware to check if user is logged in via session
 const requireAuth = (req, res, next) => {
@@ -58,6 +58,54 @@ const analyzeThreat = async (req, res) => {
     }
 };
 
+// @desc    Analyze uploaded file for fraud via VT and Gemini
+// @route   POST /api/threats/analyze-file
+// @access  Private
+const analyzeFileThreat = async (req, res) => {
+    try {
+        const file = req.file;
+        const userId = req.session.user._id;
+
+        if (!file) {
+            return res.status(400).json({ success: false, message: "No file uploaded for analysis." });
+        }
+
+        console.log(`[analyzeFileThreat] called by userId: ${userId} | file: ${file.originalname} (${file.mimetype})`);
+
+        // 1. Run the file through the VT + Gemini pipeline
+        const analysisResult = await analyzeFile(file.buffer, file.originalname, file.mimetype);
+        console.log('[analyzeFileThreat] result:', analysisResult);
+
+        // 2. Save the result to the database
+        const newThreat = await Threat.create({
+            user: userId,
+            inputType: analysisResult.inputType,
+            content: `[FILE] ${file.originalname}`,
+            isFraud: analysisResult.isFraud === true,
+            explanation: analysisResult.explanation || 'Analysis complete.'
+        });
+
+        // 3. Return response
+        res.status(200).json({
+            success: true,
+            data: {
+                _id: newThreat._id,
+                inputType: newThreat.inputType,
+                content: newThreat.content,
+                isFraud: newThreat.isFraud,
+                explanation: newThreat.explanation,
+                nextSteps: analysisResult.nextSteps || [],
+                vtStats: analysisResult.vtStats || null,
+                createdAt: newThreat.createdAt
+            }
+        });
+
+    } catch (error) {
+        console.error("[analyzeFileThreat] CAUGHT ERROR:", error.message, error.stack);
+        res.status(500).json({ success: false, message: "Server error during file analysis." });
+    }
+};
+
 // @desc    Get user's threat history
 // @route   GET /api/threats/history
 // @access  Private
@@ -83,5 +131,6 @@ const getUserThreats = async (req, res) => {
 module.exports = {
     requireAuth,
     analyzeThreat,
+    analyzeFileThreat,
     getUserThreats
 };

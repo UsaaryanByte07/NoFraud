@@ -87,4 +87,79 @@ const analyzeContent = async (content) => {
     };
 };
 
-module.exports = { analyzeContent };
+const { uploadFileToVT, pollVTReport } = require('./virusTotalAnalyzer');
+
+const analyzeFile = async (fileBuffer, filename, mimeType) => {
+    try {
+        console.log(`[analyzeFile] Uploading ${filename} to VirusTotal...`);
+        const vtAnalysisId = await uploadFileToVT(fileBuffer, filename);
+        
+        console.log(`[analyzeFile] Polling VT Report for ID: ${vtAnalysisId}...`);
+        const vtStats = await pollVTReport(vtAnalysisId);
+        console.log(`[analyzeFile] VT Stats received:`, vtStats);
+
+        // Convert stats to a readable string for Gemini
+        const statsString = JSON.stringify(vtStats);
+        
+        const filePrompt = `
+            You are an expert cybersecurity platform named "NoFraud" analyzing a user-uploaded file to detect scams, malware, and fraud.
+            
+            File Name: "${filename}"
+            MIME Type: "${mimeType}"
+            
+            We scanned this file with VirusTotal and received the following threat engine statistics:
+            ${statsString}
+            
+            (Note: "malicious" means antivirus engines flagged it as a virus. "suspicious" means it shows red flags. "undetected" means engines scanned it and found nothing wrong).
+
+            Based on the filename, type, and VirusTotal results, analyze if this file is malicious/fraudulent.
+            
+            Return ONLY a JSON object with three keys:
+            1. "isFraud": a boolean (true if highly suspicious or malicious, false if it seems safe)
+            2. "explanation": a concise string explaining WHY it is or isn't fraud based on the VT stats and filename. Keep it under 2 sentences, written directly to the user (e.g., "This file is dangerous because 5 antivirus engines flagged it as malware.").
+            3. "nextSteps": an array of short, actionable strings (max 4 items) the user should take RIGHT NOW if isFraud is true (e.g., "Delete this file immediately", "Run a full system antivirus scan"). If isFraud is false, return an empty array [].
+
+            Do NOT wrap the response in markdown blocks like \`\`\`json. Just return the raw JSON string.
+        `;
+
+        let aiResult = { isFraud: null, explanation: "AI analysis failed.", nextSteps: [] };
+        
+        for (const modelName of MODELS) {
+            try {
+                const model = genAI.getGenerativeModel({ model: modelName });
+                const result = await model.generateContent(filePrompt);
+                const responseText = result.response.text().trim();
+    
+                const parsed = JSON.parse(responseText.replace(/```json/g, "").replace(/```/g, "").trim());
+                aiResult = {
+                    isFraud: parsed.isFraud === true,
+                    explanation: parsed.explanation || "Analyzed via AI.",
+                    nextSteps: Array.isArray(parsed.nextSteps) ? parsed.nextSteps : []
+                };
+                break; // success, exit loop
+            } catch (err) {
+                if (err.message && err.message.includes("429")) continue;
+                console.error("Gemini File Parse Error:", err.message);
+            }
+        }
+
+        return {
+            inputType: "file",
+            isFraud: aiResult.isFraud === true,
+            explanation: aiResult.explanation || `VirusTotal Scan Result: ${vtStats.malicious} malicious flags.`,
+            nextSteps: aiResult.nextSteps || [],
+            vtStats: vtStats
+        };
+
+    } catch (error) {
+        console.error("File Analysis Error:", error);
+        return {
+            inputType: "file",
+            isFraud: false,
+            explanation: "Failed to analyze file. " + error.message,
+            nextSteps: []
+        };
+    }
+};
+
+module.exports = { analyzeContent, analyzeFile };
