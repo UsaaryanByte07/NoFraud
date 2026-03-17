@@ -68,24 +68,24 @@ const VerifyOtp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-4 py-16">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-3xl" />
+    <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 w-full">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-200/50 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative w-full max-w-md">
-        <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl shadow-black/40">
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-[#e0e5ec] rounded-3xl p-8 sm:p-10 shadow-neu">
           {/* Header */}
           <div className="mb-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-[#e0e5ec] flex items-center justify-center shadow-neu">
+              <svg className="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-white">Verify your email</h1>
-            <p className="text-slate-400 text-sm mt-1.5">
+            <h1 className="text-2xl font-bold text-slate-800">Verify your email</h1>
+            <p className="text-slate-500 text-sm mt-2">
               We sent a 6-digit code to{' '}
-              <span className="text-indigo-400 font-medium">{email || 'your email'}</span>
+              <span className="text-indigo-600 font-bold">{email || 'your email'}</span>
             </p>
           </div>
 
@@ -101,7 +101,7 @@ const VerifyOtp = () => {
 
           <form onSubmit={handleSubmit}>
             {/* OTP inputs */}
-            <div className="flex gap-2 justify-center mb-6" onPaste={handlePaste}>
+            <div className="flex gap-3 justify-center mb-8" onPaste={handlePaste}>
               {otp.map((digit, i) => (
                 <input
                   key={i}
@@ -112,7 +112,7 @@ const VerifyOtp = () => {
                   value={digit}
                   onChange={(e) => handleChange(i, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(i, e)}
-                  className="w-11 h-13 text-center text-xl font-bold bg-slate-800/60 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500 transition-all caret-indigo-400"
+                  className="w-12 h-14 text-center text-xl font-bold bg-[#e0e5ec] shadow-neu-inner rounded-xl text-indigo-600 focus:outline-none ring-neu-focus transition-all border-none"
                 />
               ))}
             </div>
@@ -120,20 +120,20 @@ const VerifyOtp = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center justify-center gap-2"
+              className="w-full py-3.5 px-4 rounded-xl bg-[#e0e5ec] disabled:opacity-50 disabled:cursor-not-allowed text-indigo-600 font-bold text-base transition-all shadow-neu hover:shadow-neu-hover active:shadow-neu-pressed flex items-center justify-center gap-2"
             >
               {loading ? <><Spinner size="sm" /> Verifying…</> : 'Verify Email'}
             </button>
           </form>
 
-          <div className="mt-6 flex flex-col items-center gap-2">
-            <p className="text-slate-500 text-sm">
+          <div className="mt-8 flex flex-col items-center gap-4">
+            <p className="text-slate-500 font-medium text-sm">
               Didn&apos;t receive the code?{' '}
-              <Link to="/signup" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+              <Link to="/signup" className="text-indigo-600 hover:text-indigo-500 font-bold transition-colors ml-1">
                 Resend
               </Link>
             </p>
-            <Link to="/login" className="text-slate-600 hover:text-slate-400 text-sm transition-colors">
+            <Link to="/login" className="text-slate-500 hover:text-slate-700 font-bold text-sm transition-colors">
               ← Back to Sign In
             </Link>
           </div>

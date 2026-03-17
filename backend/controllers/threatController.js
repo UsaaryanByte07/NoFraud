@@ -29,6 +29,10 @@ const analyzeThreat = async (req, res) => {
         const analysisResult = await analyzeContent(content);
         console.log('[analyzeThreat] result:', analysisResult);
 
+        if (analysisResult.error) {
+            return res.status(400).json({ success: false, message: analysisResult.explanation });
+        }
+
         // 2. Save the result to the database
         const newThreat = await Threat.create({
             user: userId,
@@ -76,6 +80,10 @@ const analyzeFileThreat = async (req, res) => {
         // 1. Run the file through the VT + Gemini pipeline
         const analysisResult = await analyzeFile(file.buffer, file.originalname, file.mimetype);
         console.log('[analyzeFileThreat] result:', analysisResult);
+
+        if (analysisResult.error) {
+            return res.status(400).json({ success: false, message: analysisResult.explanation });
+        }
 
         // 2. Save the result to the database
         const newThreat = await Threat.create({

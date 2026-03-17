@@ -17,7 +17,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen flex flex-col bg-slate-950">
+        <div className="min-h-screen flex flex-col bg-neu-base">
           <Navbar />
           <main className="flex-1">
             <Routes>

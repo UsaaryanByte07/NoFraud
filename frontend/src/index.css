@@ -7,12 +7,45 @@
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: #020617;
-  /* slate-950 */
-  color: #e2e8f0;
-  /* slate-200 */
+  background-color: #e0e5ec;
+  color: #334155;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Neumorphic Custom Utilities */
+.bg-neu-base {
+  background-color: #e0e5ec;
+}
+
+/* Outer Soft Shadows (Plates, Cards, Buttons) */
+.shadow-neu {
+  box-shadow: 9px 9px 16px rgb(163, 177, 198, 0.5), -9px -9px 16px rgba(255, 255, 255, 0.6);
+}
+
+.shadow-neu-sm {
+  box-shadow: 5px 5px 10px rgb(163, 177, 198, 0.4), -5px -5px 10px rgba(255, 255, 255, 0.6);
+}
+
+.shadow-neu-hover:hover {
+  box-shadow: 12px 12px 20px rgb(163, 177, 198, 0.6), -12px -12px 20px rgba(255, 255, 255, 0.7);
+  transform: translateY(-2px);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Inner Soft Shadows (Inputs, Depressed States) */
+.shadow-neu-inner {
+  box-shadow: inset 6px 6px 10px 0 rgba(163, 177, 198, 0.6), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.7);
+}
+
+.shadow-neu-pressed:active {
+  box-shadow: inset 4px 4px 8px 0 rgba(163, 177, 198, 0.6), inset -4px -4px 8px 0 rgba(255, 255, 255, 0.7);
+  transform: translateY(1px);
+}
+
+.ring-neu-focus:focus-within {
+  outline: none;
+  box-shadow: inset 6px 6px 10px 0 rgba(163, 177, 198, 0.6), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.7), 0 0 0 3px rgba(99, 102, 241, 0.3);
 }
 
 /* Custom scrollbar */

@@ -63,12 +63,12 @@ const checkWithGemini = async (content, type) => {
                 continue;
             }
             console.error("Gemini API Error:", error.message);
-            return { isFraud: null, explanation: "AI analysis failed." };
+            return { isFraud: null, explanation: "AI analysis failed.", error: true };
         }
     }
 
     console.error("All Gemini models quota exceeded.");
-    return { isFraud: null, explanation: "AI quota exhausted. Please try again in a few minutes." };
+    return { isFraud: null, explanation: "AI quota exhausted. Please try again in a few minutes.", error: true };
 };
 
 // Main Exported Function
@@ -83,7 +83,8 @@ const analyzeContent = async (content) => {
         inputType,
         isFraud: aiResult.isFraud === true,
         explanation: aiResult.explanation || "Content appears safe.",
-        nextSteps: aiResult.nextSteps || []
+        nextSteps: aiResult.nextSteps || [],
+        error: aiResult.error || false
     };
 };
 
@@ -153,7 +154,7 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
             `;
         }
 
-        let aiResult = { isFraud: null, explanation: "AI analysis failed.", nextSteps: [] };
+        let aiResult = { isFraud: null, explanation: "AI analysis failed.", nextSteps: [], error: true };
         
         for (const modelName of MODELS) {
             try {
@@ -165,7 +166,8 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
                 aiResult = {
                     isFraud: parsed.isFraud === true,
                     explanation: parsed.explanation || "Analyzed via AI.",
-                    nextSteps: Array.isArray(parsed.nextSteps) ? parsed.nextSteps : []
+                    nextSteps: Array.isArray(parsed.nextSteps) ? parsed.nextSteps : [],
+                    error: false
                 };
                 break; // success, exit loop
             } catch (err) {
@@ -180,7 +182,8 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
             explanation: aiResult.explanation || "Analysis completed.",
             nextSteps: aiResult.nextSteps || [],
             vtStats: vtStats,          // null if it was media
-            deepfakeInfo: deepfakeInfo // null if it was a standard document/exe
+            deepfakeInfo: deepfakeInfo, // null if it was a standard document/exe
+            error: aiResult.error || false
         };
 
     } catch (error) {
@@ -189,7 +192,8 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
             inputType: mimeType.startsWith('image/') ? 'image' : (mimeType.startsWith('video/') ? 'video' : 'file'),
             isFraud: false,
             explanation: "Failed to analyze file. " + error.message,
-            nextSteps: []
+            nextSteps: [],
+            error: true
         };
     }
 };
