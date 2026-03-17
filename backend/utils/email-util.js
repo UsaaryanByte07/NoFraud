@@ -1,40 +1,35 @@
 require("dotenv").config();
-const nodemailer = require('nodemailer')
+const sgMail = require('@sendgrid/mail');
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.GOOGLE_APP_PASSWORD,
-  },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+/**
+ * Sends an email using SendGrid API (HTTPS) to bypass SMTP port blocking.
+ * @param {string} to - Recipient email address
+ * @param {string} subject - Email subject
+ * @param {string} text - Plain text version of message
+ * @param {string} html - HTML version of message
+ */
 const sendEmail = async (to, subject, text, html) => {
-  const mailOptions = {
-    from: process.env.EMAIL, 
+  const msg = {
     to: to,
+    from: process.env.EMAIL, // Must be verified in SendGrid
     subject: subject,
     text: text,
-    html: html
+    html: html,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    return { success: true, message: 'Email sent' };
+    await sgMail.send(msg);
+    console.log(`✅ Email sent successfully to ${to}`);
+    return { success: true, message: 'Email sent via SendGrid' };
   } catch (error) {
-    if (error.response && error.response.includes('454 4.7.0')) {
-      console.error('\n🚨 GMAIL QUOTA EXCEEDED 🚨');
-      console.error('Error Code: 454 4.7.0');
-      console.error('Reason: You have hit the 500 recipients/day limit.');
-      console.error('Action Required: You must wait up to 24 hours for the quota to reset.\n');
-      
-      return { success: false, error: 'Quota exceeded', code: 454 };
-    } 
-    console.error('❌ Failed to send email:', error.message);
+    console.error('❌ SendGrid Error:', error.message);
+    if (error.response) {
+      console.error(error.response.body);
+    }
     return { success: false, error: error.message };
   }
 };
 
-module.exports = {sendEmail}
+module.exports = { sendEmail };
