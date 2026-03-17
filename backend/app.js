@@ -64,7 +64,7 @@ app.use("/api",authRouter);
 app.use("/api/threats", threatRoutes);
 // app.use(notFoundRouter);
 
-const PORT = 3010;
+const PORT = process.env.PORT || 3010;
 
 async function startServer() {
   try {
