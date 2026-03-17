@@ -2,12 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { api } from '../utils/api';
+import { generateThreatReport } from '../utils/generateReport';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const [threats, setThreats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedThreat, setSelectedThreat] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const fetchThreats = async () => {
@@ -23,6 +25,18 @@ const Dashboard = () => {
     };
     fetchThreats();
   }, []);
+
+  const handleGenerateReport = async () => {
+    try {
+      setIsGenerating(true);
+      await generateThreatReport(user, threats);
+    } catch (error) {
+      console.error("Failed to generate report", error);
+      alert("Error generating report: " + (error.message || "Unknown error"));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const totalScanned = threats?.length || 0;
   const totalFrauds = threats?.filter(t => t.isFraud).length || 0;
@@ -67,11 +81,32 @@ const Dashboard = () => {
 
       {/* Threat log */}
       <div>
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
            <h2 className="text-2xl font-black text-slate-800 tracking-tight">Recent Scans</h2>
-           <Link to="/fraud-check" className="text-sm font-bold text-indigo-600 hover:text-indigo-500 transition-colors bg-[#e0e5ec] shadow-neu hover:shadow-neu-hover px-4 py-2 rounded-xl">
-              + New Scan
-           </Link>
+           <div className="flex gap-4">
+             <button 
+               onClick={handleGenerateReport} 
+               disabled={isGenerating || threats.length === 0}
+               className="text-sm font-bold text-emerald-600 hover:text-emerald-500 transition-colors bg-[#e0e5ec] shadow-neu hover:shadow-neu-hover active:shadow-neu-pressed px-4 py-2 rounded-xl disabled:opacity-50 flex items-center gap-2"
+             >
+                {isGenerating ? (
+                   <>
+                     <div className="w-4 h-4 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin"></div>
+                     Generating...
+                   </>
+                ) : (
+                   <>
+                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                     </svg>
+                     Get Threat Report
+                   </>
+                )}
+             </button>
+             <Link to="/fraud-check" className="text-sm font-bold text-indigo-600 hover:text-indigo-500 transition-colors bg-[#e0e5ec] shadow-neu hover:shadow-neu-hover px-4 py-2 rounded-xl flex items-center h-full">
+                + New Scan
+             </Link>
+           </div>
         </div>
 
         {loading ? (
