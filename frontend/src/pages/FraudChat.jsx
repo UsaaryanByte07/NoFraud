@@ -79,7 +79,8 @@ const FraudChat = () => {
       let badge = '';
       if (inputType === 'url') badge = '[URL] ';
       else if (inputType === 'email') badge = '[Email] ';
-      else if (inputType === 'file') badge = '[File Scan] ';
+      else if (inputType === 'image' || inputType === 'video') badge = '[Media Deepfake Scan] ';
+      else if (inputType === 'file') badge = '[File Malware Scan] ';
       else badge = '[Text] ';
 
       let assistantReply = `${badge}${isFraud ? '⚠️ FRAUD DETECTED' : '✅ SAFE'}\n\n${explanation}`;
@@ -118,7 +119,7 @@ const FraudChat = () => {
           <span className="text-4xl">🕵️</span> Fraud Analyzer
         </h1>
         <p className="text-slate-400 mt-2">
-          Paste a suspicious message, link, email, or upload a file for deep analysis.
+          Paste a suspicious message, link, email, or upload a file/media for deep analysis.
         </p>
       </div>
 
@@ -156,7 +157,11 @@ const FraudChat = () => {
                 <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '150ms' }} />
                 <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '300ms' }} />
                 <span className="ml-2 text-sm italic">
-                  {selectedFile ? 'Scanning file across 70+ engines...' : 'Analyzing pattern...'}
+                  {selectedFile 
+                    ? (selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/')) 
+                        ? 'Analyzing media for AI manipulation...' 
+                        : 'Scanning file across 70+ engines...' 
+                    : 'Analyzing pattern...'}
                 </span>
               </div>
             </div>
@@ -170,12 +175,16 @@ const FraudChat = () => {
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="bg-indigo-500/20 text-indigo-400 p-2 rounded-lg">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  {selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/') ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v12a2 2 0 002 2z" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  )}
                 </svg>
               </div>
               <div className="truncate">
                 <p className="text-sm font-medium text-white truncate">{selectedFile.name}</p>
-                <p className="text-xs text-slate-400">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                <p className="text-xs text-slate-400">{(selectedFile.size / 1024).toFixed(1)} KB {(selectedFile.type || 'Unknown Type')}</p>
               </div>
             </div>
             <button 
@@ -200,6 +209,7 @@ const FraudChat = () => {
               className="hidden" 
               ref={fileInputRef}
               onChange={handleFileChange}
+              accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.exe,.txt"
               disabled={isLoading || selectedFile}
             />
             
@@ -209,7 +219,7 @@ const FraudChat = () => {
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading || selectedFile}
               className="p-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors disabled:opacity-50"
-              title="Attach File"
+              title="Attach Document or Media"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -236,6 +246,23 @@ const FraudChat = () => {
               </svg>
             </button>
           </form>
+
+          {/* Supported Types Hint */}
+          <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 mt-4 px-2 gap-2">
+            <div className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-emerald-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>Malware Scan: PDF, DOCX, XLSX, ZIP, EXE</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-purple-500/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2-2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Deepfake Scan: JPG, PNG, MP4, MOV (max 10MB)</span>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>

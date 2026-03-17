@@ -88,39 +88,70 @@ const analyzeContent = async (content) => {
 };
 
 const { uploadFileToVT, pollVTReport } = require('./virusTotalAnalyzer');
+const { analyzeMediaDeepfake } = require('./sightengineAnalyzer');
 
 const analyzeFile = async (fileBuffer, filename, mimeType) => {
     try {
-        console.log(`[analyzeFile] Uploading ${filename} to VirusTotal...`);
-        const vtAnalysisId = await uploadFileToVT(fileBuffer, filename);
-        
-        console.log(`[analyzeFile] Polling VT Report for ID: ${vtAnalysisId}...`);
-        const vtStats = await pollVTReport(vtAnalysisId);
-        console.log(`[analyzeFile] VT Stats received:`, vtStats);
+        const isMedia = mimeType.startsWith('image/') || mimeType.startsWith('video/');
+        let vtStats = null;
+        let deepfakeInfo = null;
+        let filePrompt = '';
 
-        // Convert stats to a readable string for Gemini
-        const statsString = JSON.stringify(vtStats);
-        
-        const filePrompt = `
-            You are an expert cybersecurity platform named "NoFraud" analyzing a user-uploaded file to detect scams, malware, and fraud.
+        if (isMedia) {
+            // Route media to Sightengine
+            console.log(`[analyzeFile] Uploading media ${filename} to Sightengine for Deepfake analysis...`);
+            deepfakeInfo = await analyzeMediaDeepfake(fileBuffer, filename, mimeType);
             
-            File Name: "${filename}"
-            MIME Type: "${mimeType}"
+            // Convert probability to percentage for Gemini context
+            const fakePercentage = (deepfakeInfo.deepfakeScore * 100).toFixed(1);
             
-            We scanned this file with VirusTotal and received the following threat engine statistics:
-            ${statsString}
+            filePrompt = `
+                You are an expert cybersecurity platform named "NoFraud". A user uploaded a media file for analysis.
+                
+                File Name: "${filename}"
+                MIME Type: "${mimeType}"
+                
+                We passed this file through a specialized AI Detection and Deepfake Engine.
+                The engine returned an "AI Generated Probability" score of ${fakePercentage}%.
+                (0% means authentic/human-made. 100% means definitely an AI deepfake).
+                
+                Analyze if this media is likely a deepfake or AI-generated manipulation.
+                
+                Return ONLY a JSON object with three keys:
+                1. "isFraud": boolean (true if the percentage is > 50%, false if < 50%)
+                2. "explanation": A concise string explaining the result directly to the user (e.g. "This image appears to be 98% AI-generated and is likely a deepfake.")
+                3. "nextSteps": An array of short actionable strings if it is a deepfake (e.g. "Do not trust the content of this video"). Empty array [] if authentic.
+            `;
+        } else {
+            // Route documents/exes to VirusTotal
+            console.log(`[analyzeFile] Uploading ${filename} to VirusTotal...`);
+            const vtAnalysisId = await uploadFileToVT(fileBuffer, filename);
             
-            (Note: "malicious" means antivirus engines flagged it as a virus. "suspicious" means it shows red flags. "undetected" means engines scanned it and found nothing wrong).
+            console.log(`[analyzeFile] Polling VT Report for ID: ${vtAnalysisId}...`);
+            vtStats = await pollVTReport(vtAnalysisId);
+            console.log(`[analyzeFile] VT Stats received:`, vtStats);
 
-            Based on the filename, type, and VirusTotal results, analyze if this file is malicious/fraudulent.
+            const statsString = JSON.stringify(vtStats);
             
-            Return ONLY a JSON object with three keys:
-            1. "isFraud": a boolean (true if highly suspicious or malicious, false if it seems safe)
-            2. "explanation": a concise string explaining WHY it is or isn't fraud based on the VT stats and filename. Keep it under 2 sentences, written directly to the user (e.g., "This file is dangerous because 5 antivirus engines flagged it as malware.").
-            3. "nextSteps": an array of short, actionable strings (max 4 items) the user should take RIGHT NOW if isFraud is true (e.g., "Delete this file immediately", "Run a full system antivirus scan"). If isFraud is false, return an empty array [].
+            filePrompt = `
+                You are an expert cybersecurity platform named "NoFraud" analyzing a user-uploaded file to detect scams, malware, and fraud.
+                
+                File Name: "${filename}"
+                MIME Type: "${mimeType}"
+                
+                We scanned this file with VirusTotal and received the following threat engine statistics:
+                ${statsString}
+                
+                (Note: "malicious" means antivirus engines flagged it as a virus. "suspicious" means it shows red flags).
 
-            Do NOT wrap the response in markdown blocks like \`\`\`json. Just return the raw JSON string.
-        `;
+                Based on the filename, type, and VirusTotal results, analyze if this file is malicious/fraudulent.
+                
+                Return ONLY a JSON object with three keys:
+                1. "isFraud": a boolean (true if highly suspicious or malicious, false if safe)
+                2. "explanation": a concise string explaining WHY it is or isn't fraud based on the VT stats and filename.
+                3. "nextSteps": an array of short, actionable strings if isFraud is true. Empty array [] if false.
+            `;
+        }
 
         let aiResult = { isFraud: null, explanation: "AI analysis failed.", nextSteps: [] };
         
@@ -144,17 +175,18 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
         }
 
         return {
-            inputType: "file",
+            inputType: isMedia ? (mimeType.startsWith('video/') ? "video" : "image") : "file",
             isFraud: aiResult.isFraud === true,
-            explanation: aiResult.explanation || `VirusTotal Scan Result: ${vtStats.malicious} malicious flags.`,
+            explanation: aiResult.explanation || "Analysis completed.",
             nextSteps: aiResult.nextSteps || [],
-            vtStats: vtStats
+            vtStats: vtStats,          // null if it was media
+            deepfakeInfo: deepfakeInfo // null if it was a standard document/exe
         };
 
     } catch (error) {
         console.error("File Analysis Error:", error);
         return {
-            inputType: "file",
+            inputType: mimeType.startsWith('image/') ? 'image' : (mimeType.startsWith('video/') ? 'video' : 'file'),
             isFraud: false,
             explanation: "Failed to analyze file. " + error.message,
             nextSteps: []

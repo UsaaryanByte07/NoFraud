@@ -35,7 +35,8 @@ const analyzeThreat = async (req, res) => {
             inputType: analysisResult.inputType,
             content: content,
             isFraud: analysisResult.isFraud === true, // coerce null to false safely
-            explanation: analysisResult.explanation || 'Analysis complete.'
+            explanation: analysisResult.explanation || 'Analysis complete.',
+            nextSteps: analysisResult.nextSteps || []
         });
 
         // 3. Return the response to the frontend
@@ -47,7 +48,7 @@ const analyzeThreat = async (req, res) => {
                 content: newThreat.content,
                 isFraud: newThreat.isFraud,
                 explanation: newThreat.explanation,
-                nextSteps: analysisResult.nextSteps || [],   // not stored in DB, returned directly
+                nextSteps: newThreat.nextSteps,
                 createdAt: newThreat.createdAt
             }
         });
@@ -82,7 +83,8 @@ const analyzeFileThreat = async (req, res) => {
             inputType: analysisResult.inputType,
             content: `[FILE] ${file.originalname}`,
             isFraud: analysisResult.isFraud === true,
-            explanation: analysisResult.explanation || 'Analysis complete.'
+            explanation: analysisResult.explanation || 'Analysis complete.',
+            nextSteps: analysisResult.nextSteps || []
         });
 
         // 3. Return response
@@ -94,7 +96,7 @@ const analyzeFileThreat = async (req, res) => {
                 content: newThreat.content,
                 isFraud: newThreat.isFraud,
                 explanation: newThreat.explanation,
-                nextSteps: analysisResult.nextSteps || [],
+                nextSteps: newThreat.nextSteps,
                 vtStats: analysisResult.vtStats || null,
                 createdAt: newThreat.createdAt
             }

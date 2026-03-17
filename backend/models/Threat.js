@@ -8,7 +8,7 @@ const threatSchema = new mongoose.Schema({
   },
   inputType: { 
     type: String, 
-    enum: ["url", "email", "text", "file"], 
+    enum: ["url", "email", "text", "file", "image", "video"], 
     required: true 
   },
   content: { 
@@ -23,6 +23,10 @@ const threatSchema = new mongoose.Schema({
   explanation: { 
     type: String, 
     required: true 
+  },
+  nextSteps: {
+    type: [String],
+    default: []
   },
   createdAt: { 
     type: Date, 
