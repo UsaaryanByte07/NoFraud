@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
+// Use VITE_API_URL in production, otherwise default to local dev server
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
 
 const request = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;

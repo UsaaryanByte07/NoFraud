@@ -18,12 +18,32 @@ const threatRoutes = require("./routers/threatRoutes");
 
 const app = express();
 
+// 1. Trust Proxy (Crucial for Render load balancing)
+app.set("trust proxy", 1); 
+
+// 2. Dynamic CORS Configuration
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
-}))
+}));
+
 app.use(express.static(path.join(rootDir, "public")));
 app.use(express.json());
+
+// 3. Dynamic Session/Cookie Configuration
+const isProduction = process.env.NODE_ENV === 'production';
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET_KEY,
@@ -33,7 +53,8 @@ app.use(
     cookie: {
       path: "/",
       httpOnly: true,
-      secure: false, // Set to true only in production with HTTPS
+      secure: isProduction ? true : false, // Must be true in Vercel/Render scenario
+      sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-site cookies
       maxAge: 60000 * 60 * 24 * 15, // 15 days
     },
   }),
