@@ -31,14 +31,18 @@ const FraudChat = () => {
 
     try {
       const response = await api.post('/threats/analyze', { content: userMessage });
-      const { isFraud, explanation, inputType } = response.data;
+      const { isFraud, explanation, inputType, nextSteps } = response.data;
       
       let badge = '';
-      if (inputType === 'url') badge = '[URL Detection] ';
-      else if (inputType === 'email') badge = '[Email Verification] ';
-      else badge = '[AI Text Analysis] ';
+      if (inputType === 'url') badge = '[URL] ';
+      else if (inputType === 'email') badge = '[Email] ';
+      else badge = '[Text] ';
 
-      const assistantReply = `${badge}${isFraud ? '⚠️ ALERT: THIS APPEARS TO BE FRAUD.' : '✅ SAFE: This looks okay.'}\n\n${explanation}`;
+      let assistantReply = `${badge}${isFraud ? '⚠️ FRAUD DETECTED' : '✅ SAFE'}\n\n${explanation}`;
+
+      if (isFraud && Array.isArray(nextSteps) && nextSteps.length > 0) {
+        assistantReply += '\n\n🛡️ Recommended Actions:\n' + nextSteps.map((step, i) => `${i + 1}. ${step}`).join('\n');
+      }
 
       setMessages((prev) => [
         ...prev,

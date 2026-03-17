@@ -32,9 +32,10 @@ const checkWithGemini = async (content, type) => {
         
         Analyze it for potential fraud, phishing, scam tactics (urgency, asking for credentials, suspicious links, spoofed domains, unknown senders, bad grammar, misleading offers, etc).
         
-        Return ONLY a JSON object with two keys:
+        Return ONLY a JSON object with three keys:
         1. "isFraud": a boolean (true if highly suspicious, false if it seems safe)
-        2. "explanation": a concise string explaining WHY it is or isn't fraud. Keep it under 2 sentences, written directly to the user (e.g., "This text is suspicious because...").
+        2. "explanation": a concise string explaining WHY it is or isn't fraud. Keep it under 2 sentences, written directly to the user.
+        3. "nextSteps": an array of short, actionable strings (max 4 items) the user should take RIGHT NOW if isFraud is true (e.g., "Do not click any links", "Report to your bank"). If isFraud is false, return an empty array [].
 
         Do NOT wrap the response in markdown blocks like \`\`\`json. Just return the raw JSON string.
     `;
@@ -49,7 +50,8 @@ const checkWithGemini = async (content, type) => {
                 const parsed = JSON.parse(responseText.replace(/```json/g, "").replace(/```/g, "").trim());
                 return {
                     isFraud: parsed.isFraud === true,
-                    explanation: parsed.explanation || "Analyzed via AI."
+                    explanation: parsed.explanation || "Analyzed via AI.",
+                    nextSteps: Array.isArray(parsed.nextSteps) ? parsed.nextSteps : []
                 };
             } catch (parseError) {
                 console.error("Gemini JSON Parse Error:", responseText);
@@ -80,7 +82,8 @@ const analyzeContent = async (content) => {
     return {
         inputType,
         isFraud: aiResult.isFraud === true,
-        explanation: aiResult.explanation || "Content appears safe."
+        explanation: aiResult.explanation || "Content appears safe.",
+        nextSteps: aiResult.nextSteps || []
     };
 };
 

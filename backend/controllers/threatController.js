@@ -47,6 +47,7 @@ const analyzeThreat = async (req, res) => {
                 content: newThreat.content,
                 isFraud: newThreat.isFraud,
                 explanation: newThreat.explanation,
+                nextSteps: analysisResult.nextSteps || [],   // not stored in DB, returned directly
                 createdAt: newThreat.createdAt
             }
         });
