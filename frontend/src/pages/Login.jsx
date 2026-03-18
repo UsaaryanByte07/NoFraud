@@ -25,7 +25,7 @@ const Login = () => {
       login(data.user);
       navigate('/dashboard');
     } catch (err) {
-      // If backend says email not verified, redirect to verify-otp
+      
       if (err.message?.toLowerCase().includes('verify')) {
         setFlash({ message: err.message, type: 'warning' });
         setTimeout(() => navigate(`/verify-otp?email=${encodeURIComponent(form.email)}`), 1500);
@@ -39,15 +39,15 @@ const Login = () => {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-8 w-full">
-      {/* Background glow (optional faint glow for neu) */}
+      {}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-200/50 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Card */}
+        {}
         <div className="bg-[#e0e5ec] rounded-3xl p-8 sm:p-10 shadow-neu">
-          {/* Header */}
+          {}
           <div className="mb-8 text-center">
             <Link to="/" className="inline-flex items-center gap-3 mb-6 group">
               <div className="w-12 h-12 rounded-2xl bg-[#e0e5ec] flex items-center justify-center shadow-neu group-hover:shadow-neu-hover transition-all">
@@ -63,7 +63,7 @@ const Login = () => {
             <p className="text-slate-500 text-sm mt-2">Sign in to your account</p>
           </div>
 
-          {/* Flash */}
+          {}
           {flash.message && (
             <div className="mb-4">
               <FlashMessage
@@ -126,7 +126,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Submit */}
+            {}
             <div className="pt-2">
               <button
                 type="submit"
@@ -138,7 +138,7 @@ const Login = () => {
             </div>
           </form>
 
-          {/* Footer */}
+          {}
           <p className="text-center text-slate-500 font-medium text-sm mt-8">
             Don&apos;t have an account?{' '}
             <Link to="/signup" className="text-indigo-600 hover:text-indigo-500 font-bold transition-colors ml-1">

@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // On mount, try to restore auth from localStorage
+  
   useEffect(() => {
     const storedUser = localStorage.getItem('nofraud_user');
     if (storedUser) {

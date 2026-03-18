@@ -1,12 +1,12 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Initialize Gemini
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Gemini models to try in order if one fails
+
 const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
 
-// Helper: detect if string is a URL
+
 const isValidUrl = (string) => {
     try {
         new URL(string);
@@ -16,13 +16,13 @@ const isValidUrl = (string) => {
     }
 };
 
-// Helper: detect if string is an Email
+
 const isValidEmail = (string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(string);
 };
 
-// Gemini LLM Analysis (handles URLs, emails, and plain text)
+
 const checkWithGemini = async (content, type) => {
     const prompt = `
         You are an expert cybersecurity platform named "NoFraud" analyzing user input to detect scams, phishing, and fraud.
@@ -54,24 +54,24 @@ const checkWithGemini = async (content, type) => {
                     nextSteps: Array.isArray(parsed.nextSteps) ? parsed.nextSteps : []
                 };
             } catch (parseError) {
-                console.error("Gemini JSON Parse Error:", responseText);
+                
                 return { isFraud: false, explanation: "Could not decisively analyze the content." };
             }
         } catch (error) {
             if (error.message && error.message.includes("429")) {
-                console.warn(`Model ${modelName} quota exceeded, trying next model...`);
+                
                 continue;
             }
-            console.error("Gemini API Error:", error.message);
+            
             return { isFraud: null, explanation: "AI analysis failed.", error: true };
         }
     }
 
-    console.error("All Gemini models quota exceeded.");
+    
     return { isFraud: null, explanation: "AI quota exhausted. Please try again in a few minutes.", error: true };
 };
 
-// Main Exported Function
+
 const analyzeContent = async (content) => {
     let inputType = "text";
     if (isValidUrl(content)) inputType = "url";
@@ -100,7 +100,7 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
 
         if (isMedia) {
             // Route media to Sightengine
-            console.log(`[analyzeFile] Uploading media ${filename} to Sightengine for Deepfake analysis...`);
+            
             deepfakeInfo = await analyzeMediaDeepfake(fileBuffer, filename, mimeType);
             
             // Convert probability to percentage for Gemini context
@@ -125,12 +125,12 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
             `;
         } else {
             // Route documents/exes to VirusTotal
-            console.log(`[analyzeFile] Uploading ${filename} to VirusTotal...`);
+            
             const vtAnalysisId = await uploadFileToVT(fileBuffer, filename);
             
-            console.log(`[analyzeFile] Polling VT Report for ID: ${vtAnalysisId}...`);
+            
             vtStats = await pollVTReport(vtAnalysisId);
-            console.log(`[analyzeFile] VT Stats received:`, vtStats);
+            
 
             const statsString = JSON.stringify(vtStats);
             
@@ -172,7 +172,7 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
                 break; // success, exit loop
             } catch (err) {
                 if (err.message && err.message.includes("429")) continue;
-                console.error("Gemini File Parse Error:", err.message);
+                
             }
         }
 
@@ -181,13 +181,13 @@ const analyzeFile = async (fileBuffer, filename, mimeType) => {
             isFraud: aiResult.isFraud === true,
             explanation: aiResult.explanation || "Analysis completed.",
             nextSteps: aiResult.nextSteps || [],
-            vtStats: vtStats,          // null if it was media
-            deepfakeInfo: deepfakeInfo, // null if it was a standard document/exe
+            vtStats: vtStats,          
+            deepfakeInfo: deepfakeInfo, 
             error: aiResult.error || false
         };
 
     } catch (error) {
-        console.error("File Analysis Error:", error);
+        
         return {
             inputType: mimeType.startsWith('image/') ? 'image' : (mimeType.startsWith('video/') ? 'video' : 'file'),
             isFraud: false,

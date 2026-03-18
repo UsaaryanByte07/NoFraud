@@ -15,10 +15,10 @@ const Dashboard = () => {
     const fetchThreats = async () => {
       try {
         const response = await api.get('/threats/history');
-        // api.get already returns res.data, which is { success: true, data: [...] }
+        
         setThreats(response.data || []);
       } catch (error) {
-        console.error("Error fetching threats:", error);
+        
       } finally {
         setLoading(false);
       }
@@ -31,7 +31,7 @@ const Dashboard = () => {
       setIsGenerating(true);
       await generateThreatReport(user, threats);
     } catch (error) {
-      console.error("Failed to generate report", error);
+      
       alert("Error generating report: " + (error.message || "Unknown error"));
     } finally {
       setIsGenerating(false);
@@ -57,7 +57,7 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-      {/* Welcome header */}
+      {}
       <div className="mb-10">
         <h1 className="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight">
           Welcome back, <span className="text-indigo-600">{user?.firstName || 'User'}</span> 👋
@@ -65,7 +65,7 @@ const Dashboard = () => {
         <p className="text-slate-500 font-medium mt-2">Here&apos;s an overview of your fraud protection status.</p>
       </div>
 
-      {/* Stats grid */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {stats.map((stat) => (
           <div
@@ -79,7 +79,7 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Threat log */}
+      {}
       <div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
            <h2 className="text-2xl font-black text-slate-800 tracking-tight">Recent Scans</h2>
@@ -180,12 +180,12 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Threat Details Modal */}
+      {}
       {selectedThreat && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md" onClick={() => setSelectedThreat(null)}>
-           {/* Modal Container */}
+           {}
            <div className="bg-[#e0e5ec] shadow-2xl rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-              {/* Header */}
+              {}
               <div className="p-6 pb-4 flex justify-between items-center sticky top-0 bg-[#e0e5ec]/95 backdrop-blur z-10 shadow-neu-sm">
                  <h3 className="text-xl font-black text-slate-800 flex items-center gap-3 tracking-wide">
                     <span className="text-2xl">🕵️</span> Threat Analysis Details
@@ -195,9 +195,9 @@ const Dashboard = () => {
                  </button>
               </div>
               
-              {/* Body */}
+              {}
               <div className="p-6 space-y-6">
-                 {/* Meta Info grid */}
+                 {}
                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div className="bg-[#e0e5ec] shadow-neu-inner rounded-2xl p-5">
                        <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Time Scanned</p>
@@ -223,7 +223,7 @@ const Dashboard = () => {
                     </div>
                  </div>
 
-                 {/* Content Box */}
+                 {}
                  <div>
                     <h4 className="text-sm font-bold text-slate-600 mb-2 ml-1 tracking-wide uppercase">Scanned Content</h4>
                     <div className="bg-[#e0e5ec] shadow-neu-inner rounded-2xl p-5 text-slate-700 font-mono text-sm break-all max-h-40 overflow-y-auto">
@@ -231,7 +231,7 @@ const Dashboard = () => {
                     </div>
                  </div>
 
-                 {/* Explanation Box */}
+                 {}
                  <div>
                     <h4 className="text-sm font-bold text-slate-600 mb-2 ml-1 tracking-wide uppercase">AI Analysis & Explanation</h4>
                     <div className="bg-[#e0e5ec] shadow-neu-inner rounded-2xl p-5 text-indigo-700 font-medium text-sm leading-relaxed">
@@ -239,7 +239,7 @@ const Dashboard = () => {
                     </div>
                  </div>
 
-                 {/* Recommended Actions (Only show if Fraud and exists) */}
+                 {}
                  {selectedThreat.isFraud && selectedThreat.nextSteps && selectedThreat.nextSteps.length > 0 && (
                     <div>
                        <h4 className="text-sm font-bold text-red-600 mb-2 ml-1 flex items-center gap-2 tracking-wide uppercase">
@@ -259,7 +259,7 @@ const Dashboard = () => {
                     </div>
                  )}
 
-                 {/* Official Helplines */}
+                 {}
                  <div className="mt-8 pt-8">
                     <h4 className="text-sm font-bold text-violet-600 mb-4 flex items-center gap-2 tracking-wide uppercase">
                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>

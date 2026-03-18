@@ -11,17 +11,17 @@ const { sessionStore } = require("./utils/session-util");
 const cors = require("cors");
 require("dotenv").config();
 
-//Importing the Routers
-// const notFoundRouter = require("./routers/notFoundRouter");
+
+
 const { authRouter } = require("./routers/authRouter");
 const threatRoutes = require("./routers/threatRoutes");
 
 const app = express();
 
-// 1. Trust Proxy (Crucial for Render load balancing)
+
 app.set("trust proxy", 1); 
 
-// 2. Dynamic CORS Configuration
+
 const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
@@ -41,7 +41,7 @@ app.use(cors({
 app.use(express.static(path.join(rootDir, "public")));
 app.use(express.json());
 
-// 3. Dynamic Session/Cookie Configuration
+
 const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(
@@ -53,30 +53,30 @@ app.use(
     cookie: {
       path: "/",
       httpOnly: true,
-      secure: isProduction ? true : false, // Must be true in Vercel/Render scenario
-      sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-site cookies
-      maxAge: 60000 * 60 * 24 * 15, // 15 days
+      secure: isProduction ? true : false, 
+      sameSite: isProduction ? 'none' : 'lax', 
+      maxAge: 60000 * 60 * 24 * 15, 
     },
   }),
 );
 
 app.use("/api",authRouter);
 app.use("/api/threats", threatRoutes);
-// app.use(notFoundRouter);
+
 
 const PORT = process.env.PORT || 3010;
 
 async function startServer() {
   try {
     await mongoose.connect(url);
-    console.log("Connected to MongoDB successfully!");
+    
 
     app.listen(PORT, () => {
-      console.log(`Server is running on PORT:http://localhost:${PORT}`);
+      
     });
   } catch (err) {
-    console.log("Unable to connect to Database:", err.message);
-    process.exit(1); // Exit the process if DB connection fails
+    
+    process.exit(1); 
   }
 }
 

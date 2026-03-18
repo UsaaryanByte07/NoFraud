@@ -46,7 +46,7 @@ const Signup = () => {
 
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-[#e0e5ec] rounded-3xl p-8 sm:p-10 shadow-neu">
-          {/* Header */}
+          {}
           <div className="mb-8 text-center">
             <Link to="/" className="inline-flex items-center gap-3 mb-6 group">
               <div className="w-12 h-12 rounded-2xl bg-[#e0e5ec] flex items-center justify-center shadow-neu group-hover:shadow-neu-hover transition-all">
@@ -115,7 +115,7 @@ const Signup = () => {
               />
             </div>
 
-            {/* Password */}
+            {}
             <div>
               <label className="block text-sm font-bold text-slate-600 mb-2 ml-1">Password</label>
               <div className="relative">
@@ -147,7 +147,7 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Confirm Password */}
+            {}
             <div>
               <label className="block text-sm font-bold text-slate-600 mb-2 ml-1">Confirm password</label>
               <input
@@ -168,7 +168,7 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Submit */}
+            {}
             <div className="pt-2">
               <button
                 type="submit"
@@ -180,7 +180,7 @@ const Signup = () => {
             </div>
           </form>
 
-          {/* Footer */}
+          {}
           <p className="text-center text-slate-500 font-medium text-sm mt-8">
             Already have an account?{' '}
             <Link to="/login" className="text-indigo-600 hover:text-indigo-500 font-bold transition-colors ml-1">

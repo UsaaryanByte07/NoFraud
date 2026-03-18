@@ -14,7 +14,7 @@ const postVerifyOtp = async (req, res, next) => {
       res.status(401).json({ message: "Either the OTP has Expired or it is Invalid"})
     }
   } catch (err) {
-    console.log(err);
+    
     res.status(500).json({ message: "Internal Server Error During OTP Verification"})
   }
 };

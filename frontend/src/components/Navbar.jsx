@@ -14,7 +14,7 @@ const Navbar = () => {
     try {
       await api.post('/logout', {});
     } catch {
-      // Even if API fails, clear local state
+      
     } finally {
       logout();
       setLoggingOut(false);
@@ -26,7 +26,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-[#e0e5ec] shadow-neu mb-4">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
+          {}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-[#e0e5ec] flex items-center justify-center shadow-neu group-hover:shadow-neu-hover transition-all">
               <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,7 +38,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Nav */}
+          {}
           <div className="hidden md:flex items-center gap-6">
             {isLoggedIn ? (
               <>
@@ -59,7 +59,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile hamburger */}
+          {}
           <button
             className="md:hidden text-slate-600 hover:text-indigo-600 transition-colors p-2 rounded-xl shadow-neu active:shadow-neu-pressed bg-[#e0e5ec]"
             onClick={() => setMenuOpen((v) => !v)}
@@ -77,7 +77,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile menu */}
+        {}
         {menuOpen && (
           <div className="md:hidden py-6 border-t border-slate-300/50 space-y-4">
             {isLoggedIn ? (

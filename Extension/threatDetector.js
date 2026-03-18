@@ -1,4 +1,4 @@
-// ===== Threat Detector (Content Script) =====
+
 
 function detectThreats() {
     const currentUrl = window.location.href;
@@ -27,20 +27,20 @@ function detectThreats() {
             threatReason = "Phishing keywords detected in URL.";
         }
 
-        // B. Punycode / Homograph Spoofing
+        
         if (hostname.includes("xn--")) {
             isThreat = true;
             threatReason = "Punycode detected (possible homograph spoofing attack).";
         }
 
-        // C. Risky TLDs
+        
         const riskyTlds = [".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".pw", ".buzz", ".icu", ".cam"];
         if (riskyTlds.some(tld => hostname.endsWith(tld))) {
             isThreat = true;
             threatReason = `High-risk domain extension (${hostname.split('.').pop()}) detected.`;
         }
 
-        // D. Child Mode Restrictions (Adult, Gambling, Violence)
+        
         if (isChildModeOn) {
             const restrictedKeywords = [
                 "pornhub", "xvideos", "xnxx", "redtube", "youporn", "porn",
@@ -52,7 +52,7 @@ function detectThreats() {
                 threatReason = "Restricted Content (Child Protection Enabled).";
             }
 
-            // F. Block Social Media & Gaming in Child Mode
+            
             const socialGamingDomains = [
                 "facebook.com", "instagram.com", "tiktok.com", "twitter.com", "x.com",
                 "roblox.com", "fortnite.com", "twitch.tv", "discord.com", "steamcommunity.com"
@@ -62,11 +62,11 @@ function detectThreats() {
                 threatReason = "Social Media / Gaming is restricted in Child Mode.";
             }
 
-            // G. Scrape page for inappropriate text content
+            
             const pageText = document.body.innerText.toLowerCase();
             const badWords = ["sex", "naked", "gamble", "kill", "drug", "casino"];
             if (badWords.some(word => pageText.includes(word))) {
-                // If many bad words found, block it
+                
                 let matchCount = badWords.filter(word => pageText.includes(word)).length;
                 if (matchCount >= 2) {
                     isThreat = true;
@@ -74,26 +74,26 @@ function detectThreats() {
                 }
             }
 
-            // H. Blur all images as a precaution (Optional/Conditional)
+            
             document.querySelectorAll('img').forEach(img => {
                 img.style.filter = "blur(10px) grayscale(100%)";
                 img.style.transition = "filter 0.5s";
                 img.title = "Blocked by NoFraud Child Protection";
             });
 
-            // I. Remove Chat/Comment widgets (Common distraction/danger)
+            
             const chatSelectors = ['[class*="chat"]', '[id*="chat"]', '.comments', '#comments'];
             chatSelectors.forEach(selector => {
                 document.querySelectorAll(selector).forEach(el => el.remove());
             });
         }
 
-        // --- 2. ASYNC API CHECKS (Background) ---
+        
         chrome.runtime.sendMessage(
             { action: "checkURLThreats", url: currentUrl },
             (response) => {
                 if (chrome.runtime.lastError) {
-                    console.log("NoFraud: Background script unavailable.");
+                    
                 }
 
                 if (response && response.isThreat) {
@@ -101,7 +101,7 @@ function detectThreats() {
                     threatReason = "Google Safe Browsing Flag: " + response.type.replace(/_/g, " ");
                 }
 
-                // Final Action trigger
+                
                 if (isThreat) {
                     if (isChildModeOn) {
                         showChildLockScreen(threatReason, guardianPin);
@@ -109,7 +109,7 @@ function detectThreats() {
                         showThreatAlert("CRITICAL: " + threatReason + " — Leave this site immediately!", "#dc2626");
                     }
                 } else {
-                    // Normal HTTP warning if NOT in child mode (already handled if in child mode)
+                    
                     const isLocal = hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("192.168.");
                     if (protocol === "http:" && !isLocal && !isChildModeOn) {
                         showThreatAlert("MODERATE RISK: This site uses an unsecured HTTP connection.", "#f59e0b");
@@ -118,7 +118,7 @@ function detectThreats() {
             }
         );
 
-        // Immediate trigger if local check already caught it
+        
         if (isThreat) {
             if (isChildModeOn) {
                 showChildLockScreen(threatReason, guardianPin);
@@ -129,14 +129,14 @@ function detectThreats() {
     });
 }
 
-// ===== Child Protection Lock Screen =====
+
 function showChildLockScreen(reason, realPin) {
     if (document.getElementById("nofraud-child-lock")) return;
 
     const overlay = document.createElement("div");
     overlay.id = "nofraud-child-lock";
     
-    // Completely freeze the background website and mute media
+    
     document.body.style.overflow = "hidden";
     document.querySelectorAll('video, audio').forEach(media => {
         try { media.pause(); media.muted = true; } catch (e) {}
@@ -184,9 +184,9 @@ function showChildLockScreen(reason, realPin) {
     });
 }
 
-// ===== On-Page Alert Banner =====
+
 function showThreatAlert(message, bgColor = "#dc2626") {
-    // Prevent duplicate alerts
+    
     if (document.getElementById("nofraud-alert-" + bgColor)) return;
 
     const alertBox = document.createElement("div");
@@ -212,7 +212,7 @@ function showThreatAlert(message, bgColor = "#dc2626") {
 
     document.body.appendChild(alertBox);
 
-    // Auto-dismiss after 8 seconds
+    
     setTimeout(() => {
         alertBox.style.opacity = "0";
         setTimeout(() => alertBox.remove(), 300);

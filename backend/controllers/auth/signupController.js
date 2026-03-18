@@ -36,42 +36,52 @@ const postSignup = [
         otpExpiry,
       });
       await user.save();
-      await sendEmail(
+      const emailResponse = await sendEmail(
         email,
         "Welcome to NoFraud - Verify Your Email",
-        `Hi ${firstName} ${lastName},
-
-To complete your account setup, please verify your email address using the OTP (One-Time Password) below:
-
-Your Verification Code: ${otp}
-
-This code will expire in 5 minutes for security reasons.
-
-Steps to verify:
-1. Return to the verification page
-2. Enter the 6-digit code: ${otp}
-3. Click "Verify Email"
-`,`<p>Hi ${firstName} ${lastName},
-
-To complete your account setup, please verify your email address using the OTP (One-Time Password) below:
-
-Your Verification Code: ${otp}
-
-This code will expire in 5 minutes for security reasons.
-
-Steps to verify:
-1. Return to the verification page
-2. Enter the 6-digit code: ${otp}
-3. Click "Verify Email"
-</p>`
+        `Hi ${firstName} ${lastName},\n\nTo complete your account setup, please verify your email address using the OTP (One-Time Password) below:\n\nYour Verification Code: ${otp}\n\nThis code will expire in 5 minutes for security reasons.\n\nSteps to verify:\n1. Return to the verification page\n2. Enter the 6-digit code: ${otp}\n3. Click "Verify Email"\n\nBest regards,\nThe NoFraud Team`,
+        `
+        <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 40px 20px; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <div style="background-color: #4F46E5; padding: 20px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">NoFraud</h1>
+            </div>
+            <div style="padding: 30px;">
+              <p style="font-size: 16px; margin-bottom: 20px;">Hi <strong>${firstName} ${lastName}</strong>,</p>
+              <p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">To complete your account setup, please verify your email address using the OTP (One-Time Password) below.</p>
+              <div style="background-color: #f1f5f9; border: 1px dashed #4F46E5; border-radius: 6px; padding: 20px; text-align: center; margin-bottom: 30px;">
+                <p style="font-size: 14px; text-transform: uppercase; color: #64748b; margin: 0 0 10px 0; letter-spacing: 1px;">Your Verification Code</p>
+                <h2 style="font-size: 36px; font-weight: 700; color: #4F46E5; margin: 0; letter-spacing: 5px;">${otp}</h2>
+              </div>
+              <p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">This code will expire in <strong>5 minutes</strong> for security reasons.</p>
+              <div style="margin-bottom: 30px;">
+                 <h3 style="font-size: 16px; color: #333; margin-bottom: 10px;">Steps to verify:</h3>
+                 <ol style="font-size: 16px; line-height: 1.6; color: #555; margin: 0; padding-left: 20px;">
+                   <li>Return to the verification page</li>
+                   <li>Enter the 6-digit code above</li>
+                   <li>Click <strong>"Verify Email"</strong></li>
+                 </ol>
+              </div>
+              <p style="font-size: 16px; margin-bottom: 0;">Best regards,<br><strong style="color: #4F46E5;">The NoFraud Team</strong></p>
+            </div>
+            <div style="background-color: #f1f5f9; padding: 15px; text-align: center; font-size: 12px; color: #64748b;">
+              &copy; ${new Date().getFullYear()} NoFraud. All rights reserved.
+            </div>
+          </div>
+        </div>
+        `
       );
+
+      if (!emailResponse.success) {
+        return res.status(500).json({errors: [{msg: "Failed to send verification email. Please try again."}]});
+      }
     } catch (err) {
       if (err.code == 11000) {
         return res.status(422).json({errors: [{msg: "Email Entered by You already Exist. You can Try Sign In with the Email."}]})
       }
       return res.status(500).json({errors: [{msg: "An unexpected server error occurred. Please try again."}]})
     }
-    res.json({success: true, message: "OTP Sent Successfull. Please Check Your Email.", email});
+    res.json({success: true, message: "OTP Sent Successfully. Please Check Your Email.", email});
   },
 ];
 

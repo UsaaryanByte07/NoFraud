@@ -1,4 +1,4 @@
-// ===== Privacy Guard Functions =====
+
 
 function injectPrivacyCss() {
     if (!document.getElementById("noFraud-privacy-css")) {
@@ -47,7 +47,7 @@ function unblurEmails() {
     }
 }
 
-// Dynamically listen for toggles to instantly apply/remove from current page
+
 chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === "local") {
         if (changes.emailBlurEnabled !== undefined) {

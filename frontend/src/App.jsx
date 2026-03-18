@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Pages
+
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import VerifyOtp from './pages/VerifyOtp';
@@ -21,14 +21,14 @@ function App() {
           <Navbar />
           <main className="flex-1">
             <Routes>
-              {/* Public routes */}
+              {}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/verify-otp" element={<VerifyOtp />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
 
-              {/* Protected routes */}
+              {}
               <Route
                 path="/dashboard"
                 element={
@@ -46,7 +46,7 @@ function App() {
                 }
               />
 
-              {/* Default redirect */}
+              {}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>

@@ -51,26 +51,26 @@ const FraudChat = () => {
     try {
       let response;
       if (selectedFile) {
-        // Handle File Upload (Requires FormData and custom fetch wrapper since api.js is hardcoded to JSON)
+        
         const formData = new FormData();
         formData.append('file', selectedFile);
         
-        // We use native fetch here because the api.js utility enforces 'application/json' 
-        // which breaks multipart boundary generation
+        
+        
         const BASE_URL = import.meta.env.VITE_API_URL;
         const res = await fetch(`${BASE_URL}/threats/analyze-file`, {
           method: 'POST',
           body: formData,
-          credentials: 'include' // necessary for session cookie
+          credentials: 'include' 
         });
         
         if (!res.ok) throw new Error("File analysis failed");
         response = await res.json();
         
-        // Reset file input
+        
         removeFile();
       } else {
-        // Handle Normal Text/URL/Email
+        
         response = await api.post('/threats/analyze', { content: userMessage });
       }
 
@@ -98,7 +98,7 @@ const FraudChat = () => {
         },
       ]);
     } catch (error) {
-      console.error(error);
+      
       const errorMessage = error.response?.data?.message || 'Sorry, I encountered an error while analyzing that. Please try again later.';
       
       setMessages((prev) => [
@@ -109,7 +109,7 @@ const FraudChat = () => {
           isFraud: null
         },
       ]);
-      removeFile(); // cleanup on error
+      removeFile(); 
     } finally {
       setIsLoading(false);
     }
@@ -129,9 +129,9 @@ const FraudChat = () => {
         </p>
       </div>
 
-      {/* Chat Box */}
+      {}
       <div className="flex-1 bg-[#e0e5ec] shadow-neu rounded-3xl overflow-hidden flex flex-col relative">
-        {/* Messages Area */}
+        {}
         <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-8">
           {messages.map((msg, idx) => (
             <div
@@ -175,7 +175,7 @@ const FraudChat = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Selected File Preview (Overlay) */}
+        {}
         {selectedFile && (
           <div className="absolute bottom-32 left-8 right-8 bg-[#e0e5ec] shadow-neu rounded-2xl p-4 flex items-center justify-between border-l-4 border-indigo-500 z-10 transition-all">
             <div className="flex items-center gap-4 overflow-hidden">
@@ -205,11 +205,11 @@ const FraudChat = () => {
           </div>
         )}
 
-        {/* Input Area */}
+        {}
         <div className="p-4 sm:p-6 pb-6">
           <form onSubmit={handleSubmit} className="flex gap-3 sm:gap-4 items-center">
             
-            {/* Hidden File Input */}
+            {}
             <input 
               type="file" 
               className="hidden" 
@@ -219,7 +219,7 @@ const FraudChat = () => {
               disabled={isLoading || selectedFile}
             />
             
-            {/* Attachment Button */}
+            {}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -253,7 +253,7 @@ const FraudChat = () => {
             </button>
           </form>
 
-          {/* Supported Types Hint */}
+          {}
           <div className="flex flex-col sm:flex-row items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 mt-6 px-4 gap-3">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-[#e0e5ec] shadow-neu-inner flex items-center justify-center text-emerald-600">

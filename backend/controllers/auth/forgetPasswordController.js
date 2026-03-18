@@ -68,43 +68,50 @@ const postForgotPassword = async (req, res, next) => {
     user.resetTokenExpiry = Date.now() + 5 * 60 * 1000;
     await user.save();
 
-    await sendEmail(
+    const emailResponse = await sendEmail(
       email,
       "Reset Your NoFraud Password",
-      `Hi there,
-
-We received a request to reset the password for your NoFraud account associated with ${email}.
-
-To reset your password, please click on the following link or copy and paste it into your browser:
-http://localhost:5173/reset-password?token=${token}&email=${email}
-
-This link will expire in 5 minutes for security reasons.
-
-If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
-
-Best regards,
-The Airbnb Team`,
-      `Hi there,
-
-We received a request to reset the password for your NoFraud account associated with ${email}.
-
-To reset your password, please click on the following link or copy and paste it into your browser:
-http://localhost:5173/reset-password?token=${token}&email=${email}
-
-This link will expire in 5 minutes for security reasons.
-
-If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
-
-Best regards,
-The NoFraud Team`,
+      `Hi there,\n\nWe received a request to reset the password for your NoFraud account associated with ${email}.\n\nTo reset your password, please click on the following link or copy and paste it into your browser:\nhttp://localhost:5173/reset-password?token=${token}&email=${email}\n\nThis link will expire in 5 minutes for security reasons.\n\nIf you didn't request a password reset, please ignore this email. Your password will remain unchanged.\n\nBest regards,\nThe NoFraud Team`,
+      `
+      <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 40px 20px; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+          <div style="background-color: #4F46E5; padding: 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">NoFraud</h1>
+          </div>
+          <div style="padding: 30px;">
+            <p style="font-size: 16px; margin-bottom: 20px;">Hi there,</p>
+            <p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">We received a request to reset the password for your NoFraud account associated with <strong>${email}</strong>.</p>
+            <p style="font-size: 16px; margin-bottom: 30px; line-height: 1.5;">To reset your password, please click the button below:</p>
+            <div style="text-align: center; margin-bottom: 30px;">
+              <a href="http://localhost:5173/reset-password?token=${token}&email=${email}" style="display: inline-block; background-color: #4F46E5; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 6px; font-size: 16px; font-weight: bold;">Reset Password</a>
+            </div>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Or copy and paste this link into your browser:</p>
+            <p style="font-size: 14px; overflow-wrap: break-word; word-break: break-all; color: #4F46E5; margin-bottom: 30px;"><a href="http://localhost:5173/reset-password?token=${token}&email=${email}" style="color: #4F46E5;">http://localhost:5173/reset-password?token=${token}&email=${email}</a></p>
+            <p style="font-size: 16px; margin-bottom: 20px; line-height: 1.5;">This link will expire in <strong>5 minutes</strong> for security reasons.</p>
+            <p style="font-size: 16px; margin-bottom: 30px; line-height: 1.5;">If you didn't request a password reset, please ignore this email. Your password will remain unchanged.</p>
+            <p style="font-size: 16px; margin-bottom: 0;">Best regards,<br><strong style="color: #4F46E5;">The NoFraud Team</strong></p>
+          </div>
+          <div style="background-color: #f1f5f9; padding: 15px; text-align: center; font-size: 12px; color: #64748b;">
+            &copy; ${new Date().getFullYear()} NoFraud. All rights reserved.
+          </div>
+        </div>
+      </div>
+      `
     );
+
+    if (!emailResponse.success) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send password reset email. Please try again.",
+      });
+    }
 
     res.json({
       success: true,
       message: "Password reset link has been sent to your email address.",
     });
   } catch (err) {
-    console.log(err);
+    
     res
       .status(500)
       .json({

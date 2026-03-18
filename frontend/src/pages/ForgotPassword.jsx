@@ -33,7 +33,7 @@ const ForgotPassword = () => {
 
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-[#e0e5ec] rounded-3xl p-8 sm:p-10 shadow-neu">
-          {/* Header */}
+          {}
           <div className="mb-8 text-center">
             <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-[#e0e5ec] flex items-center justify-center shadow-neu">
               <svg className="w-8 h-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

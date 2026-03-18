@@ -2,13 +2,13 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Chart from 'chart.js/auto';
 
-// Helper to generate a chart as base64 image
+
 const createChartImage = async (type, data, options) => {
   return new Promise((resolve) => {
     const canvas = document.createElement('canvas');
     canvas.width = 500;
     canvas.height = 300;
-    // Hide canvas off-screen
+    
     canvas.style.position = 'absolute';
     canvas.style.top = '-9999px';
     document.body.appendChild(canvas);
@@ -19,7 +19,7 @@ const createChartImage = async (type, data, options) => {
       options: {
         ...options,
         animation: false,
-        devicePixelRatio: 2, // High resolution for PDF
+        devicePixelRatio: 2, 
         plugins: {
           ...options?.plugins,
           legend: {
@@ -42,19 +42,19 @@ const createChartImage = async (type, data, options) => {
 
 export const generateThreatReport = async (user, allThreats) => {
   try {
-    // 1. Filter threats for the last 15 days
+    
     const fifteenDaysAgo = new Date();
     fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
     
     const recentThreats = allThreats.filter(t => new Date(t.createdAt) >= fifteenDaysAgo).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
-    // 2. Compute Metrics
+    
     const total = recentThreats.length;
     const frauds = recentThreats.filter(t => t.isFraud).length;
     const safe = total - frauds;
     
-    // Calculate a "User Security Score" (10-100) based on ratio of safe vs fraud
-    // High score means mostly safe items scanned, low score means encountering lots of fraud
+    
+    
     let userScore = 100;
     if (total > 0) {
       userScore = Math.max(10, Math.round((safe / total) * 100));
@@ -70,8 +70,7 @@ export const generateThreatReport = async (user, allThreats) => {
       return acc;
     }, {});
 
-    // 3. Generate Charts
-    // Chart 1: Safe vs Fraud Pie Chart
+    
     const pieChartImg = await createChartImage('pie', {
       labels: ['Safe Scans', 'Fraud Detected'],
       datasets: [{
@@ -81,7 +80,7 @@ export const generateThreatReport = async (user, allThreats) => {
       }]
     }, { responsive: false });
 
-    // Chart 2: Threat Types Bar Chart
+    
     const labels = Object.keys(inputTypes);
     const dataVals = Object.values(inputTypes);
     const barChartImg = await createChartImage('bar', {
@@ -96,8 +95,8 @@ export const generateThreatReport = async (user, allThreats) => {
       scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
     });
 
-    // 4. Initialize jsPDF
-    // Use A4 size, landscape for better table fitting
+    
+    
     const doc = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',
@@ -108,10 +107,10 @@ export const generateThreatReport = async (user, allThreats) => {
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPos = 0;
 
-    // Helper Functions for UI
+    
     const addHeaderBanner = () => {
-      // Deep Indigo Gradient-like Banner
-      doc.setFillColor(30, 27, 75); // slate-950 / deep indigo
+      
+      doc.setFillColor(30, 27, 75); 
       doc.rect(0, 0, pageWidth, 40, 'F');
       
       doc.setTextColor(255, 255, 255);
@@ -121,10 +120,10 @@ export const generateThreatReport = async (user, allThreats) => {
       
       doc.setFont("helvetica", "normal");
       doc.setFontSize(14);
-      doc.setTextColor(165, 180, 252); // indigo-300
+      doc.setTextColor(165, 180, 252); 
       doc.text("Personal Threat Intelligence Report", 15, 28);
       
-      // Date on right
+      
       doc.setFontSize(10);
       doc.setTextColor(255, 255, 255);
       doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth - 15, 20, { align: "right" });
@@ -134,47 +133,47 @@ export const generateThreatReport = async (user, allThreats) => {
     const addSectionHeader = (title, y) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
-      doc.setTextColor(30, 41, 59); // slate-800
+      doc.setTextColor(30, 41, 59); 
       doc.text(title, 15, y);
       
-      // Underline
-      doc.setDrawColor(226, 232, 240); // slate-200
+      
+      doc.setDrawColor(226, 232, 240); 
       doc.setLineWidth(0.5);
       doc.line(15, y + 2, pageWidth - 15, y + 2);
       return y + 10;
     };
 
-    // --- PAGE 1: Executive Summary ---
+    
     addHeaderBanner();
     yPos = 50;
     
-    // User Info Intro
+    
     doc.setFontSize(12);
-    doc.setTextColor(71, 85, 105); // slate-600
+    doc.setTextColor(71, 85, 105); 
     doc.setFont("helvetica", "normal");
     const name = user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Valued User';
     doc.text(`Prepared exclusively for: ${name}`, 15, yPos);
     yPos += 10;
 
-    // Security Score Card
+    
     doc.setFillColor(userScore >= 80 ? 236 : userScore >= 50 ? 254 : 254, 
                      userScore >= 80 ? 253 : userScore >= 50 ? 240 : 226, 
-                     userScore >= 80 ? 245 : userScore >= 50 ? 138 : 226); // bg colors
+                     userScore >= 80 ? 245 : userScore >= 50 ? 138 : 226); 
                      
     doc.roundedRect(15, yPos, pageWidth - 30, 30, 4, 4, 'F');
     
-    // Score Number
+    
     doc.setFontSize(36);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(userScore >= 80 ? 5 : userScore >= 50 ? 161 : 220, 
                      userScore >= 80 ? 150 : userScore >= 50 ? 98 : 38, 
-                     userScore >= 80 ? 105 : userScore >= 50 ? 7 : 38); // Text color math
+                     userScore >= 80 ? 105 : userScore >= 50 ? 7 : 38); 
     doc.text(`${userScore}`, 25, yPos + 22);
     
     doc.setFontSize(12);
-    doc.text("/ 100", 45 + (userScore === 100 ? 5 : 0), yPos + 22); // adjusted X pos
+    doc.text("/ 100", 45 + (userScore === 100 ? 5 : 0), yPos + 22); 
     
-    // Score Text
+    
     doc.setFontSize(14);
     doc.text("Security Posture", 90, yPos + 10);
     doc.setFontSize(10);
@@ -184,11 +183,11 @@ export const generateThreatReport = async (user, allThreats) => {
     
     yPos += 40;
 
-    // Summary Metrics Cards (3 columns)
+    
     const cardW = (pageWidth - 40) / 3;
     
-    // Card 1
-    doc.setFillColor(248, 250, 252); // slate-50
+    
+    doc.setFillColor(248, 250, 252); 
     doc.setDrawColor(226, 232, 240);
     doc.roundedRect(15, yPos, cardW, 20, 3, 3, 'FD');
     doc.setFont("helvetica", "bold");
@@ -199,30 +198,30 @@ export const generateThreatReport = async (user, allThreats) => {
     doc.setTextColor(100, 116, 139);
     doc.text("Total Scans", 15 + (cardW/2), yPos + 16, { align: 'center' });
 
-    // Card 2
-    doc.setFillColor(236, 253, 245); // emerald-50
-    doc.setDrawColor(167, 243, 208); // emerald-200
+    
+    doc.setFillColor(236, 253, 245); 
+    doc.setDrawColor(167, 243, 208); 
     doc.roundedRect(15 + cardW + 5, yPos, cardW, 20, 3, 3, 'FD');
     doc.setFontSize(18);
-    doc.setTextColor(16, 185, 129); // emerald-500
+    doc.setTextColor(16, 185, 129); 
     doc.text(`${safe}`, 15 + cardW + 5 + (cardW/2), yPos + 10, { align: 'center' });
     doc.setFontSize(9);
-    doc.setTextColor(6, 78, 59); // emerald-900 for high contrast
+    doc.setTextColor(6, 78, 59); 
     doc.text("Safe Items", 15 + cardW + 5 + (cardW/2), yPos + 16, { align: 'center' });
 
-    // Card 3
-    doc.setFillColor(254, 242, 242); // red-50
+    
+    doc.setFillColor(254, 242, 242); 
     doc.setDrawColor(254, 202, 202);
     doc.roundedRect(15 + (cardW*2) + 10, yPos, cardW, 20, 3, 3, 'FD');
     doc.setFontSize(18);
-    doc.setTextColor(239, 68, 68); // red-500
+    doc.setTextColor(239, 68, 68); 
     doc.text(`${frauds}`, 15 + (cardW*2) + 10 + (cardW/2), yPos + 10, { align: 'center' });
     doc.setFontSize(9);
     doc.text("Threats Blocked", 15 + (cardW*2) + 10 + (cardW/2), yPos + 16, { align: 'center' });
 
     yPos += 30;
 
-    // --- PAGE 1: Guidelines ---
+    
     doc.setFillColor(248, 250, 252);
     doc.roundedRect(15, yPos, pageWidth - 30, 65, 4, 4, 'F');
     
@@ -249,33 +248,33 @@ export const generateThreatReport = async (user, allThreats) => {
       pY += 7;
     });
 
-    // --- PAGE 2: Threat Landscape & Logs ---
+    
     doc.addPage();
     addHeaderBanner();
     yPos = 45;
 
-    // --- Visualizations ---
+    
     yPos = addSectionHeader("Threat Landscape", yPos);
     
-    // Draw charts side by side with modern borders
+    
     const chartW = (pageWidth - 40) / 2;
     
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(226, 232, 240);
     
-    // Pie Box
-    doc.roundedRect(15, yPos, chartW, 55, 3, 3, 'FD');
-    doc.addImage(pieChartImg, 'PNG', 15 + (chartW/2) - 30, yPos + 5, 60, 40); // Centered
     
-    // Bar Box
+    doc.roundedRect(15, yPos, chartW, 55, 3, 3, 'FD');
+    doc.addImage(pieChartImg, 'PNG', 15 + (chartW/2) - 30, yPos + 5, 60, 40); 
+    
+    
     doc.roundedRect(15 + chartW + 10, yPos, chartW, 55, 3, 3, 'FD');
-    doc.addImage(barChartImg, 'PNG', 15 + chartW + 10 + (chartW/2) - 35, yPos + 5, 70, 40); // Centered
+    doc.addImage(barChartImg, 'PNG', 15 + chartW + 10 + (chartW/2) - 35, yPos + 5, 70, 40); 
 
     yPos += 65;
     
     yPos = addSectionHeader("Detailed Threat Log", yPos);
 
-    // Prepare table data
+    
     const tableBody = recentThreats.map(t => {
       const date = new Date(t.createdAt).toLocaleDateString();
       const status = t.isFraud ? 'FRAUD' : 'SAFE';
@@ -344,7 +343,7 @@ export const generateThreatReport = async (user, allThreats) => {
     
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(220, 38, 38); // red-600
+    doc.setTextColor(220, 38, 38); 
     doc.text(" Report Cyber Crime (India Helpdesk)", 20, yPos + 8);
     
     doc.setFontSize(10);
@@ -354,12 +353,12 @@ export const generateThreatReport = async (user, allThreats) => {
     doc.text("• Official Gov Portal: https://cybercrime.gov.in/", 20, yPos + 22);
     doc.text("• Phishing Incident Response: incident@cert-in.org.in", 20, yPos + 28);
 
-    // Save PDF
+    
     doc.save('NoFraud_Threat_Intelligence.pdf');
     return true;
 
   } catch (err) {
-    console.error("Error generating PDF report:", err);
-    throw err; // Throw the actual error so Dashboard can catch it
+    
+    throw err; 
   }
 };

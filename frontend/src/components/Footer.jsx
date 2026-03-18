@@ -5,7 +5,7 @@ const Footer = () => {
     <footer className="bg-slate-950 border-t border-white/5 mt-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
-          {/* Brand */}
+          {}
           <div className="flex flex-col items-center md:items-start gap-2">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
@@ -22,7 +22,7 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Links */}
+          {}
           <div className="flex gap-12">
             <div>
               <h4 className="text-white font-semibold text-sm mb-3">Product</h4>
